@@ -10,14 +10,22 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema:: create('blog', function (Blueprint $table) {
+        Schema:: create('blogs', function (Blueprint $table) {
             $table->id();
             $table->string('title');
             $table->text('content');
-            $table->string('slug');
+            $table->text('summary');
+            $table->string('tag')->nullable(true);;
+            $table->integer('status')->default(0);
+            $table->string('slug')->unique();
             $table->string('author');
+            $table->integer('view_count');
+            $table->integer('share_count');
+            $table->integer('comment_count');
+            $table->dateTime('publish_date');
             $table->string('featured_img');
-            $table->timestamp('created_at');
+            $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -26,6 +34,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('posts');
     }
 };
