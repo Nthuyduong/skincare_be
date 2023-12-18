@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Exceptions\SlugExistException;
-use App\Http\Controllers\ApiController;;
+use App\Http\Controllers\ApiController;
+
+;
+
 use App\Models\Blog;
 use App\Services\BlogServiceManagement\BlogManagementService;
 use Illuminate\Http\Request;
@@ -28,11 +31,11 @@ class BlogController extends ApiController
         try {
 
             $page = $request->input('page', 1);
-            if ($page < 1){
+            if ($page < 1) {
                 $page = 1;
             }
             $limit = $request->input('limit', 10);
-            if ($limit < 1){
+            if ($limit < 1) {
                 $limit = 10;
             }
             $filter = [];
@@ -84,15 +87,17 @@ class BlogController extends ApiController
             return response()->json([
                 'status' => self::STATUS_SUCCESS,
                 'msg' => 'test created',
+                'data' => $blog,
             ]);
-        } catch(ValidationException $e) {
+        } catch (ValidationException $e) {
             return $this->clientErrorResponse('Invalid request: ' . json_encode($e->errors()), \Symfony\Component\HttpFoundation\Response::HTTP_BAD_REQUEST);
-        } catch(SlugExistException $e) {
+        } catch (SlugExistException $e) {
             return $this->clientErrorResponse($e->getMessage(), \Symfony\Component\HttpFoundation\Response::HTTP_BAD_REQUEST);
         } catch (Exception $e) {
             return $this->internalServerErrorResponse(__METHOD__, $e);
         }
     }
+
     // GET http://127.0.0.1:8000/api/blogs/1
     public function getBlogById(string $id)
     {
@@ -102,7 +107,7 @@ class BlogController extends ApiController
                 'status' => self::STATUS_SUCCESS,
                 'msg' => $id,
             ]);
-        } catch(ValidationException $e) {
+        } catch (ValidationException $e) {
             return $this->clientErrorResponse('Invalid request: ' . json_encode($e->errors()), \Symfony\Component\HttpFoundation\Response::HTTP_BAD_REQUEST);
         } catch (Exception $e) {
             return $this->internalServerErrorResponse(__METHOD__, $e);
@@ -115,12 +120,11 @@ class BlogController extends ApiController
         try {
 
 
-
             return response()->json([
                 'status' => self::STATUS_SUCCESS,
                 'msg' => $id,
             ]);
-        } catch(ValidationException $e) {
+        } catch (ValidationException $e) {
             return $this->clientErrorResponse('Invalid request: ' . json_encode($e->errors()), \Symfony\Component\HttpFoundation\Response::HTTP_BAD_REQUEST);
         } catch (Exception $e) {
             return $this->internalServerErrorResponse(__METHOD__, $e);

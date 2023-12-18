@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Services\CategoryServiceManagement;
+namespace App\Services\SubcateServiceManagement;
 
-use App\Models\Category;
+use App\Models\Subcate;
 use Illuminate\Support\Facades\Log;
 use DateTime;
 
-class CategoryManagementModelProxy
+class SubcateManagementModelProxy
 {
     public function __construct()
     {
@@ -17,7 +17,7 @@ class CategoryManagementModelProxy
 
     }
 
-    function createCategory($data)
+    function createBlog($data)
     {
 
     }

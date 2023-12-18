@@ -6,10 +6,10 @@ use App\Http\Controllers\ApiController;
 use App\Models\Category;
 use App\Services\CategoryServiceManagement\CategoryManagementService;
 use Illuminate\Http\Request;
+use Exception;
 
 class CategoryController extends ApiController
 {
-
     protected $categoryManagementService;
 
     public function __construct(CategoryManagementService $categoryManagementService)
