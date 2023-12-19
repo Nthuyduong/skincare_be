@@ -106,7 +106,7 @@ class BlogManagementModelProxy
 
     function updateBlog($id, $data)
     {
-        $blog = Blog::find($id);
+        $blog = $this->getBlogById($id);
 
         if (!$blog) {
             return null;
@@ -114,5 +114,17 @@ class BlogManagementModelProxy
 
         $blog->update($data);
         return $blog;
+    }
+
+    function deleteBlog($id)
+    {
+        $blog = $this->getBlogById($id);
+
+        if (!$blog) {
+            return null;
+        }
+
+        $blog->delete();
+        return true;
     }
 }

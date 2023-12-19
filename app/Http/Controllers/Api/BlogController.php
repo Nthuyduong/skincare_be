@@ -128,9 +128,10 @@ class BlogController extends ApiController
                 'status' => 'required',
             ]);
 
-            $blog = $this->blogManagementService->updateBlog($id, $data);
+            $blogs = $this->blogManagementService->updateBlog($id, $data);
 
             return response()->json([
+                'data' => $blogs,
                 'status' => self::STATUS_SUCCESS,
                 'msg' => $id,
             ]);
@@ -141,9 +142,22 @@ class BlogController extends ApiController
         }
     }
 
-    public function deleteBlog(Request $request)
+    public function deleteBlog($id)
     {
+        try {
+            $blogs = $this->blogManagementService->deleteBlog($id);
 
+            return response()->json([
+                'data' => $blogs,
+                'status' => self::STATUS_SUCCESS,
+                'msg' => 'success',
+            ]);
+
+        } catch (ValidationException $e) {
+            return $this->clientErrorResponse('Invalid request: ' . json_encode($e->errors()), \Symfony\Component\HttpFoundation\Response::HTTP_BAD_REQUEST);
+        } catch (Exception $e) {
+            return $this->internalServerErrorResponse(__METHOD__, $e);
+        }
     }
 
 }

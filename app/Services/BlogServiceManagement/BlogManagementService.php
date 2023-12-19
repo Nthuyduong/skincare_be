@@ -57,4 +57,12 @@ class BlogManagementService
 
         return $blogs;
     }
+
+    function deleteBlog($id)
+    {
+
+        $blogs = $this->blogManagementModelProxy->deleteBlog($id);
+
+        return $blogs;
+    }
 }
