@@ -22,34 +22,34 @@ class BlogManagementModelProxy
         // check nếu request có filter có search thì thêm vào query
         if (isset($filter['search'])) {
             // gom nhóm các điều kiện trong where lại
-            $query = $query->where(function ($q) use($filter) {
+            $query = $query->where(function ($q) use ($filter) {
                 $q->where('title', 'like', '%' . $filter['search'] . '%')
                     ->orWhere('slug', 'like', '%' . $filter['search'] . '%');
             });
         }
 
-        if(isset($filter['status'])){
+        if (isset($filter['status'])) {
             $query = $query->where('status', $filter['status']);
         }
 
-        if(isset($filter['publish_from'])){
+        if (isset($filter['publish_from'])) {
             $fromDate = new DateTime($filter['publish_from']);
             $query = $query->where('publish_date', '>=', $fromDate);
         }
 
-        if(isset($filter['publish_to'])){
+        if (isset($filter['publish_to'])) {
             $toDate = new DateTime($filter['publish_to']);
             $query = $query->where('publish_date', '<=', $toDate);
         }
 
-        if(isset($filter['sort'])){
+        if (isset($filter['sort'])) {
             //ex: sort = id:desc or sort = id:asc,...
             $sort = $filter['sort'];
             // tách chuỗi sort theo dấu : trả về mảng gồm 2 phần tử trước và sau dấu :
             // $sortArr = ['id', 'desc']
             $sortArr = explode(':', $sort);
             // kiểm tra nếu mảng có 2 phần tử thì mới sắp xếp
-            if(count($sortArr) == 2){
+            if (count($sortArr) == 2) {
                 $query = $query->orderBy($sortArr[0], $sortArr[1]);
             }
         }
@@ -88,11 +88,31 @@ class BlogManagementModelProxy
         return $blog;
     }
 
-    function checkSlugExist($slug) {
+    function checkSlugExist($slug)
+    {
         $blog = Blog::where('slug', $slug)->first();
-        if($blog){
+        if ($blog) {
             return true;
         }
         return false;
+    }
+
+    function getBlogById($id)
+    {
+        $blog = Blog::find($id);
+
+        return $blog;
+    }
+
+    function updateBlog($id, $data)
+    {
+        $blog = Blog::find($id);
+
+        if (!$blog) {
+            return null;
+        }
+
+        $blog->update($data);
+        return $blog;
     }
 }

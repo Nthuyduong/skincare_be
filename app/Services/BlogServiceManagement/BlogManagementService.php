@@ -28,10 +28,10 @@ class BlogManagementService
         if ($checkSlug) {
             throw new SlugExistException();
         }
-        
+
         if (isset($data['featured_img'])) {
             $fileFolder = '/uploads';
-            if(!File::exists($fileFolder)) {
+            if (!File::exists($fileFolder)) {
                 File::makeDirectory(public_path($fileFolder), 0777, true, true);
             }
 
@@ -45,5 +45,16 @@ class BlogManagementService
         return $this->blogManagementModelProxy->createBlog($data);
     }
 
-    // bài tập về nhà tạo 1 api để update blog
+    function getBlogById($id)
+    {
+        $blogs = $this->blogManagementModelProxy->getBlogById($id);
+        return $blogs;
+    }
+
+    function updateBlog($id, $data)
+    {
+        $blogs = $this->blogManagementModelProxy->updateBlog($id, $data);
+
+        return $blogs;
+    }
 }

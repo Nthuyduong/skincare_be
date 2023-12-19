@@ -103,6 +103,8 @@ class BlogController extends ApiController
     {
         try {
 
+            $blog = $this->blogManagementService->getBlogById($id);
+
             return response()->json([
                 'status' => self::STATUS_SUCCESS,
                 'msg' => $id,
@@ -115,10 +117,18 @@ class BlogController extends ApiController
     }
 
     // PUT http://127.0.0.1:8000/api/blogs/1
-    public function updateBlog(Request $request, string $id)
+    public function updateBlog(Request $request, string $id, $data)
     {
         try {
 
+            $this->validate($request, [
+                'title' => 'required|string|max:255',
+                'content' => 'required',
+                'slug' => 'required',
+                'status' => 'required',
+            ]);
+
+            $blog = $this->blogManagementService->updateBlog($id, $data);
 
             return response()->json([
                 'status' => self::STATUS_SUCCESS,

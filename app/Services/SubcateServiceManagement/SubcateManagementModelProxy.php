@@ -15,6 +15,15 @@ class SubcateManagementModelProxy
     function getAllWithFilter($page = 1, $limit = 10, $filter = [])
     {
 
+
+        $count = $query->count();
+
+        if (isset($filter['search'])) {
+            $query = $query->where(function ($q) use ($filter) {
+                $q->where('title', 'like', '%' . $filter['search'] . '%')
+                    ->orWhere('slug', 'like', '%' . $filter['search'] . '%');
+            });
+        }
     }
 
     function createBlog($data)
@@ -24,7 +33,7 @@ class SubcateManagementModelProxy
 
     function checkSlugExist($slug)
     {
-
+        
     }
 }
 
