@@ -43,12 +43,31 @@ class CategoryManagementModelProxy
 
     function createCategory($data)
     {
-
+        $category = new Category();
+        $category->name = $data['name'];
+        $category->description = $data['description'];
+        $category->feature_img = $data['feature_img'];
+        $category->save();
+        return $category;
     }
 
-    function checkSlugExist($slug)
+    function getCategoryById($id)
     {
+        $category = Category::find($id);
+    }
 
+    function updateCategory($id, $data)
+    {
+        $category = $this->getCategoryById($id);
+
+        if (!$category) {
+            return null;
+        }
+
+        $updateFields = ['name', 'description', 'feature_img'];
+        $category->update(array_only($data, $updateFields));
+
+        return $category;
     }
 }
 

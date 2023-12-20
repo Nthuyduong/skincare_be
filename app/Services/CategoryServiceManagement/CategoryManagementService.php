@@ -18,13 +18,32 @@ class CategoryManagementService
 
     function getAllWithFilter($page = 1, $limit = 10, $filter = [])
     {
-
+        $categories = $this->CategoryManagementModelProxy->getAllWithFilter($page, $limit, $filter);
+        return $categories;
     }
 
     function createCategory($data)
     {
+        if (isset($data['feature_img'])) {
+            $fileFolder = '/uploads';
+            if (!File::exists($fileFolder)) {
+                File::makeDirectory(public_path($fileFolder), 0777, true, true);
+            }
 
+            $file = $data['feature_img'];
+            $fileName = time() . '_' . $file->getClientOriginalName();
+
+            $file->move(public_path($fileFolder), $fileName);
+
+            $data['feature_img'] = $fileFolder . '/' . $fileName;
+        }
+        return $this->CategoryManagementModelProxy->createCategory($data);
     }
 
-    // bài tập về nhà tạo 1 api để update blog
+    function updateCategory($id, $data)
+    {
+        $categories = $this->CategoryManagementModelProxy->updateCategory($id, $data);
+
+        return $categories;
+    }
 }
