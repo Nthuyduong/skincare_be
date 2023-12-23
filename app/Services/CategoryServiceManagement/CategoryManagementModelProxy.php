@@ -54,6 +54,7 @@ class CategoryManagementModelProxy
     function getCategoryById($id)
     {
         $category = Category::find($id);
+        return $category;
     }
 
     function updateCategory($id, $data)

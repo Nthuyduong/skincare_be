@@ -108,6 +108,7 @@ class BlogController extends ApiController
             return response()->json([
                 'status' => self::STATUS_SUCCESS,
                 'msg' => $id,
+                'data' => $blog
             ]);
         } catch (ValidationException $e) {
             return $this->clientErrorResponse('Invalid request: ' . json_encode($e->errors()), \Symfony\Component\HttpFoundation\Response::HTTP_BAD_REQUEST);

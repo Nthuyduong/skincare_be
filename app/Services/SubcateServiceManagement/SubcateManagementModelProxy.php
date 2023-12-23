@@ -15,6 +15,7 @@ class SubcateManagementModelProxy
     function getAllWithFilter($page = 1, $limit = 10, $filter = [])
     {
 
+        $query = Subcate::query();
 
         $count = $query->count();
 
@@ -26,14 +27,19 @@ class SubcateManagementModelProxy
         }
     }
 
-    function createBlog($data)
+    function createSubcategory($data)
     {
-
+        $subcategory = new Subcate();
+        $subcategory->name = $data['name'];
+        $subcategory->description = $data['description'];
+        $subcategory->feature_img = $data['data'];
+        $subcategory->save();
+        return $subcategory;
     }
 
-    function checkSlugExist($slug)
+    function getSubcategoryById($id)
     {
-        
+       
     }
 }
 
