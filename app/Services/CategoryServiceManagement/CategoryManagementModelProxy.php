@@ -16,6 +16,8 @@ class CategoryManagementModelProxy
     {
         $query = Category::query();
 
+        $query = $query->with('childrens')->with('parent');
+
         $count = $query->count();
 
         if (isset($filter['search'])) {
@@ -67,6 +69,20 @@ class CategoryManagementModelProxy
 
         $updateFields = ['name', 'description', 'feature_img'];
         $category->update(array_only($data, $updateFields));
+
+        return $category;
+    }
+
+    function updateCategoryStatus($id, $status)
+    {
+        $category = $this->getCategoryById($id);
+
+        if (!$category) {
+            return null;
+        }
+
+        $category->status = $status;
+        $category->save();
 
         return $category;
     }

@@ -30,4 +30,9 @@ class Blog extends Model
     const STATUS_PUBLISHED = 1;
 
     use SoftDeletes;
+
+    // n-n
+    public function categories() {
+        return $this->belongsToMany(Category::class, 'blogs_categories', 'blog_id', 'category_id');
+    }
 }

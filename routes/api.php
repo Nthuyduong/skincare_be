@@ -37,4 +37,12 @@ Route::namespace("Api")->group(function() {
         Route::get('/{id}', 'BlogController@getBlogById');
         Route::put('/{id}', 'BlogController@updateBlog');
     });
+
+    Route::group(['prefix' => 'categories'], function () {
+        Route::get('/', 'CategoryController@getAll');
+        
+        Route::post('/', 'CategoryController@createCategory');
+        Route::get('/{id}', 'CategoryController@getCategoryById');
+        Route::put('/{id}', 'CategoryController@updateCategory');
+    });
 });

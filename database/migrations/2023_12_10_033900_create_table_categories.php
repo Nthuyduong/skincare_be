@@ -14,8 +14,8 @@ return new class extends Migration {
             $table->id();
             $table->unsignedBigInteger('parent_id')->nullable(true);
             $table->string('name');
-            $table->text('description')->nullable();
-            $table->string('feature_img');
+            $table->text('description')->nullable(true);
+            $table->string('feature_img')->nullable(true);
             $table->timestamps();
             $table->softDeletes();
         });

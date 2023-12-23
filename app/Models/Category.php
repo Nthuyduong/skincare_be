@@ -19,4 +19,13 @@ class Category extends Model
 
     protected $table = 'categories';
 
+    // 1-n
+    public function childrens() {
+        return $this->hasMany(Category::class, 'parent_id', 'id');
+    }
+
+    // 1-1
+    public function parent() {
+        return $this->belongsTo(Category::class, 'parent_id', 'id');
+    }
 }

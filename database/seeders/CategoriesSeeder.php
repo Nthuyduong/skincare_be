@@ -13,11 +13,12 @@ class CategoriesSeeder extends Seeder
      */
     public function run(): void
     {
-        for ($i = 0; $i < 50; $i++) {
+        for ($i = 0; $i < 10; $i++) {
             $category = new Category();
             $category->name = 'gios dua cay cai ve troi ' . $i;
             $category->feature_img = null;
             $category->description = 'category description' . $i;
+            $category->status = 1;
             $category->save();
         }
     }

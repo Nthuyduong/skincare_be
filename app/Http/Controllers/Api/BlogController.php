@@ -44,6 +44,7 @@ class BlogController extends ApiController
             $filter['sort'] = $request->input('sort');
             $filter['publish_from'] = $request->input('publish_from');
             $filter['publish_to'] = $request->input('publish_to');
+            $filter['category_id'] = $request->input('category_id');
 
             $blogs = $this->blogManagementService->getAllWithFilter($page, $limit, $filter);
 
@@ -81,6 +82,7 @@ class BlogController extends ApiController
             $data['author'] = $request->input('author');
             $data['publish_date'] = $request->input('publish_date');
             $data['featured_img'] = $request->file('featured_img');
+            $data['categories'] = $request->input('categories'); // [1,2,3]
 
             $blog = $this->blogManagementService->createBlog($data);
 
@@ -118,16 +120,15 @@ class BlogController extends ApiController
     }
 
     // PUT http://127.0.0.1:8000/api/blogs/1
-    public function updateBlog(Request $request, string $id, $data)
+    public function updateBlog(Request $request, string $id)
     {
         try {
-
-            $this->validate($request, [
-                'title' => 'required|string|max:255',
-                'content' => 'required',
-                'slug' => 'required',
-                'status' => 'required',
-            ]);
+            if ($request->has('title')) {
+                $data['title'] = $request->input('title') ?? '';
+            }
+            
+            $data['content'] = $request->input('content');
+            $data['categories'] = $request->input('categories'); // [1,2,3]
 
             $blogs = $this->blogManagementService->updateBlog($id, $data);
 

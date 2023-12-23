@@ -35,6 +35,11 @@ class CategoryController extends ApiController
             $filter['status'] = $request->input('status');
 
             $category = $this->categoryManagementService->getAllWithFilter($page, $limit, $filter);
+            return response()->json([
+                'data' => $category,
+                'status' => self::STATUS_SUCCESS,
+                'msg' => 'success',
+            ]);
         } catch (Exception $e) {
             return $this->internalServerErrorResponse(__METHOD__, $e);
         }

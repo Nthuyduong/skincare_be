@@ -47,22 +47,16 @@ class BlogManagementService
 
     function getBlogById($id)
     {
-        $blogs = $this->blogManagementModelProxy->getBlogById($id);
-        return $blogs;
+        return $this->blogManagementModelProxy->getBlogById($id);
     }
 
     function updateBlog($id, $data)
     {
-        $blogs = $this->blogManagementModelProxy->updateBlog($id, $data);
-
-        return $blogs;
+        return $this->blogManagementModelProxy->updateBlog($id, $data);
     }
 
     function deleteBlog($id)
     {
-
-        $blogs = $this->blogManagementModelProxy->deleteBlog($id);
-
-        return $blogs;
+        return $this->blogManagementModelProxy->deleteBlog($id);
     }
 }

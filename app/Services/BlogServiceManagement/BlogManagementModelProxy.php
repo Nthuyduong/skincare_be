@@ -19,6 +19,8 @@ class BlogManagementModelProxy
         // select * from blogs
         $count = $query->count();
 
+        $query = $query->with('categories');
+
         // check nếu request có filter có search thì thêm vào query
         if (isset($filter['search'])) {
             // gom nhóm các điều kiện trong where lại
@@ -40,6 +42,12 @@ class BlogManagementModelProxy
         if (isset($filter['publish_to'])) {
             $toDate = new DateTime($filter['publish_to']);
             $query = $query->where('publish_date', '<=', $toDate);
+        }
+
+        if (isset($filter['category_id'])) {
+            $query = $query->whereHas('categories', function ($q) use ($filter) {
+                $q->where('category_id', $filter['category_id']);
+            });
         }
 
         if (isset($filter['sort'])) {
@@ -85,6 +93,7 @@ class BlogManagementModelProxy
         $blog->publish_date = $data['publish_date'];
         $blog->featured_img = $data['featured_img'];
         $blog->save();
+        $blog->categories()->attach($data['categories']);
         return $blog;
     }
 
@@ -99,21 +108,23 @@ class BlogManagementModelProxy
 
     function getBlogById($id)
     {
-        $blog = Blog::find($id);
-
-        return $blog;
+        return Blog::where('id', $id)->with('categories')->first();
     }
 
     function updateBlog($id, $data)
     {
         $blog = $this->getBlogById($id);
-
         if (!$blog) {
             return null;
         }
-
-        $blog->update($data);
-        return $blog;
+        $blog->title = $data['title'] ?? $blog->title;
+        $blog->content = $data['content'] ?? $blog->content;
+        
+        if (isset($data['categories'])) {
+            $blog->categories()->sync($data['categories']);
+        }
+        $blog->save();
+        return $this->getBlogById($id);;
     }
 
     function deleteBlog($id)
