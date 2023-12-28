@@ -119,12 +119,12 @@ class BlogManagementModelProxy
         }
         $blog->title = $data['title'] ?? $blog->title;
         $blog->content = $data['content'] ?? $blog->content;
-        
+
         if (isset($data['categories'])) {
             $blog->categories()->sync($data['categories']);
         }
         $blog->save();
-        return $this->getBlogById($id);;
+        return $this->getBlogById($id);
     }
 
     function deleteBlog($id)

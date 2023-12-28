@@ -49,14 +49,14 @@ class CategoryManagementModelProxy
         $category->name = $data['name'];
         $category->description = $data['description'];
         $category->feature_img = $data['feature_img'];
+        $category->status = $data['status'];
         $category->save();
         return $category;
     }
 
     function getCategoryById($id)
     {
-        $category = Category::find($id);
-        return $category;
+        return Category::where('id', $id)->first();
     }
 
     function updateCategory($id, $data)
@@ -67,8 +67,15 @@ class CategoryManagementModelProxy
             return null;
         }
 
-        $updateFields = ['name', 'description', 'feature_img'];
-        $category->update(array_only($data, $updateFields));
+        $category->name = $data['name'] ?? $category->name;
+        $category->description = $data['description'] ?? $category->description;
+        $category->feature_img = $data['feature_img'] ?? $category->feature_img;
+        $category->status = $data['status'] ?? $category->status;
+
+        if (isset($data['parent_id'])) {
+            $category->parent_id = $data['parent_id'];
+        }
+        $category->save();
 
         return $category;
     }
