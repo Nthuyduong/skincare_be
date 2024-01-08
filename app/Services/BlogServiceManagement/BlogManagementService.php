@@ -50,6 +50,11 @@ class BlogManagementService
         return $this->blogManagementModelProxy->getBlogById($id);
     }
 
+    function getBlogBySlug($slug)
+    {
+        return $this->blogManagementModelProxy->getBlogBySlug($slug);
+    }
+
     function updateBlog($id, $data)
     {
         return $this->blogManagementModelProxy->updateBlog($id, $data);

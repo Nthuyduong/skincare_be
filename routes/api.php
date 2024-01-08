@@ -36,6 +36,8 @@ Route::namespace("Api")->group(function() {
         // bài tập về nhà
         Route::get('/{id}', 'BlogController@getBlogById');
         Route::put('/{id}', 'BlogController@updateBlog');
+
+        Route::get('/slug/{slug}', 'BlogController@getBlogBySlug');
     });
 
     Route::group(['prefix' => 'categories'], function () {

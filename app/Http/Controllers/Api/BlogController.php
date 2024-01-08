@@ -119,6 +119,24 @@ class BlogController extends ApiController
         }
     }
 
+    public function getBlogBySlug(string $slug)
+    {
+        try {
+
+            $blog = $this->blogManagementService->getBlogBySlug($slug);
+
+            return response()->json([
+                'status' => self::STATUS_SUCCESS,
+                'msg' => $slug,
+                'data' => $blog
+            ]);
+        } catch (ValidationException $e) {
+            return $this->clientErrorResponse('Invalid request: ' . json_encode($e->errors()), \Symfony\Component\HttpFoundation\Response::HTTP_BAD_REQUEST);
+        } catch (Exception $e) {
+            return $this->internalServerErrorResponse(__METHOD__, $e);
+        }
+    }
+
     // PUT http://127.0.0.1:8000/api/blogs/1
     public function updateBlog(Request $request, string $id)
     {

@@ -111,6 +111,11 @@ class BlogManagementModelProxy
         return Blog::where('id', $id)->with('categories')->first();
     }
 
+    function getBlogBySlug($slug)
+    {
+        return Blog::where('slug', $slug)->with('categories')->first();
+    }
+
     function updateBlog($id, $data)
     {
         $blog = $this->getBlogById($id);
