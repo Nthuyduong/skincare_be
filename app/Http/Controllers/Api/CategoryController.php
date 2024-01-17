@@ -33,6 +33,7 @@ class CategoryController extends ApiController
             $filter = [];
             $filter['search'] = $request->input('search');
             $filter['status'] = $request->input('status');
+            $filter['has_parent'] = $request->input('has_parent');
 
             $category = $this->categoryManagementService->getAllWithFilter($page, $limit, $filter);
             return response()->json([
@@ -91,6 +92,24 @@ class CategoryController extends ApiController
                 'data' => $categories,
                 'status' => self::STATUS_SUCCESS,
                 'msg' => $id,
+            ]);
+        } catch (ValidationException $e) {
+            return $this->clientErrorResponse('Invalid request: ' . json_encode($e->errors()), \Symfony\Component\HttpFoundation\Response::HTTP_BAD_REQUEST);
+        } catch (Exception $e) {
+            return $this->internalServerErrorResponse(__METHOD__, $e);
+        }
+    }
+
+    public function getCategoryById(string $id)
+    {
+        try {
+
+            $category = $this->categoryManagementService->getCategoryById($id);
+
+            return response()->json([
+                'status' => self::STATUS_SUCCESS,
+                'msg' => $id,
+                'data' => $category
             ]);
         } catch (ValidationException $e) {
             return $this->clientErrorResponse('Invalid request: ' . json_encode($e->errors()), \Symfony\Component\HttpFoundation\Response::HTTP_BAD_REQUEST);

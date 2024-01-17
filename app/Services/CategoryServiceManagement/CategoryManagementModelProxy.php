@@ -18,14 +18,21 @@ class CategoryManagementModelProxy
 
         $query = $query->with('childrens')->with('parent');
 
-        $count = $query->count();
-
         if (isset($filter['search'])) {
             $query = $query->where(function ($q) use ($filter) {
                 $q->where('title', 'like', '%' . $filter['search'] . '%')
                     ->orWhere('slug', 'like', '%' . $filter['search'] . '%');
             });
         }
+        if (isset($filter['has_parent'])) {
+            if ($filter['has_parent'] == 'true') {
+                $query = $query->whereNotNull('parent_id');
+            } else {
+                $query = $query->whereNull('parent_id');
+            }
+        }
+
+        $count = $query->count();
 
         $results = $query
             ->skip(($page - 1) * $limit)
@@ -56,7 +63,7 @@ class CategoryManagementModelProxy
 
     function getCategoryById($id)
     {
-        return Category::where('id', $id)->first();
+        return Category::where('id', $id)->with('childrens')->with('parent')->first();
     }
 
     function updateCategory($id, $data)

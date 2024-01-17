@@ -30,7 +30,7 @@ class BlogManagementService
         }
 
         if (isset($data['featured_img'])) {
-            $fileFolder = '/uploads';
+            $fileFolder = '/storage';
             if (!File::exists($fileFolder)) {
                 File::makeDirectory(public_path($fileFolder), 0777, true, true);
             }

@@ -25,7 +25,7 @@ class CategoryManagementService
     function createCategory($data)
     {
         if (isset($data['feature_img'])) {
-            $fileFolder = '/uploads';
+            $fileFolder = '/storage';
             if (!File::exists($fileFolder)) {
                 File::makeDirectory(public_path($fileFolder), 0777, true, true);
             }
@@ -45,5 +45,9 @@ class CategoryManagementService
         $categories = $this->CategoryManagementModelProxy->updateCategory($id, $data);
 
         return $categories;
+    }
+    function getCategoryById($id)
+    {
+        return $this->CategoryManagementModelProxy->getCategoryById($id);
     }
 }
