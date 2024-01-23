@@ -124,6 +124,8 @@ class BlogManagementModelProxy
         }
         $blog->title = $data['title'] ?? $blog->title;
         $blog->content = $data['content'] ?? $blog->content;
+        $blog->slug = $data['slug'] ?? $blog->slug;
+        $blog->summary = $data['summary'] ?? $blog->summary;
 
         if (isset($data['categories'])) {
             $blog->categories()->sync($data['categories']);
