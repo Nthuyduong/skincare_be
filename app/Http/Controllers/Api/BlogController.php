@@ -147,6 +147,8 @@ class BlogController extends ApiController
             
             $data['content'] = $request->input('content');
             $data['categories'] = $request->input('categories'); // [1,2,3]
+            $data['slug'] = $request->input('slug');
+            $data['summary'] = $request->input('summary');
 
             $blogs = $this->blogManagementService->updateBlog($id, $data);
 
