@@ -92,6 +92,7 @@ class BlogManagementModelProxy
         $blog->author = $data['author'];
         $blog->publish_date = $data['publish_date'];
         $blog->featured_img = $data['featured_img'];
+        $blog->banner_img = $data['banner_img'];
         $blog->save();
         $blog->categories()->attach($data['categories']);
         return $blog;
@@ -126,6 +127,8 @@ class BlogManagementModelProxy
         $blog->content = $data['content'] ?? $blog->content;
         $blog->slug = $data['slug'] ?? $blog->slug;
         $blog->summary = $data['summary'] ?? $blog->summary;
+        $blog->featured_img = $data['featured_img'] ?? $blog->featured_img;
+        $blog->banner_img = $data['banner_img'] ?? $blog->banner_img;
 
         if (isset($data['categories'])) {
             $blog->categories()->sync($data['categories']);

@@ -82,6 +82,7 @@ class BlogController extends ApiController
             $data['author'] = $request->input('author');
             $data['publish_date'] = $request->input('publish_date');
             $data['featured_img'] = $request->file('featured_img');
+            $data['banner_img'] = $request->file('banner_img');
             $data['categories'] = $request->input('categories'); // [1,2,3]
 
             $blog = $this->blogManagementService->createBlog($data);
@@ -149,6 +150,8 @@ class BlogController extends ApiController
             $data['categories'] = $request->input('categories'); // [1,2,3]
             $data['slug'] = $request->input('slug');
             $data['summary'] = $request->input('summary');
+            $data['featured_img'] = $request->file('featured_img');
+            $data['banner_img'] = $request->file('banner_img');
 
             $blogs = $this->blogManagementService->updateBlog($id, $data);
 

@@ -35,7 +35,7 @@ Route::namespace("Api")->group(function() {
         Route::post('/', 'BlogController@createBlog');
         // bài tập về nhà
         Route::get('/{id}', 'BlogController@getBlogById');
-        Route::put('/{id}', 'BlogController@updateBlog');
+        Route::post('/{id}', 'BlogController@updateBlog');
 
         Route::get('/slug/{slug}', 'BlogController@getBlogBySlug');
     });

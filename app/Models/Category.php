@@ -31,4 +31,8 @@ class Category extends Model
     {
         return $this->belongsTo(Category::class, 'parent_id', 'id');
     }
+
+    public function blogs() {
+        return $this->belongsToMany(Blog::class, 'blogs_categories', 'category_id', 'blog_id');
+    }
 }

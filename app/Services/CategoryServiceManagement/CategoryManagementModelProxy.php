@@ -63,7 +63,11 @@ class CategoryManagementModelProxy
 
     function getCategoryById($id)
     {
-        return Category::where('id', $id)->with('childrens')->with('parent')->first();
+        return Category::where('id', $id)
+        ->with('childrens')
+        ->with('parent')
+        ->withCount('blogs')
+        ->first();
     }
 
     function updateCategory($id, $data)
