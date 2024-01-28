@@ -3,6 +3,7 @@
 namespace App\Services\BlogServiceManagement;
 
 use App\Exceptions\SlugExistException;
+use App\Helpers\ImageHelper;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\File;
 
@@ -30,30 +31,12 @@ class BlogManagementService
         }
 
         if (isset($data['featured_img'])) {
-            $fileFolder = '/storage';
-            if (!File::exists($fileFolder)) {
-                File::makeDirectory(public_path($fileFolder), 0777, true, true);
-            }
-
-            $file = $data['featured_img'];
-            $fileName = time() . '_' . $file->getClientOriginalName();
-
-            $file->move(public_path($fileFolder), $fileName);
-
-            $data['featured_img'] = $fileFolder . '/' . $fileName;
+            $featured_img = ImageHelper::resizeImage($data['featured_img']);
+            $data['featured_img'] = $featured_img['original'];
         }
         if (isset($data['banner_img'])) {
-            $fileFolder = '/storage';
-            if (!File::exists($fileFolder)) {
-                File::makeDirectory(public_path($fileFolder), 0777, true, true);
-            }
-
-            $file = $data['banner_img'];
-            $fileName = time() . '_' . $file->getClientOriginalName();
-
-            $file->move(public_path($fileFolder), $fileName);
-
-            $data['banner_img'] = $fileFolder . '/' . $fileName;
+            $banner_img = ImageHelper::resizeImage($data['banner_img']);
+            $data['banner_img'] = $banner_img['original'];
         }
         return $this->blogManagementModelProxy->createBlog($data);
     }
@@ -71,40 +54,23 @@ class BlogManagementService
     function updateBlog($id, $data)
     {
         $blog = $this->blogManagementModelProxy->getBlogById($id);
+        
         if ($blog) {
             if (isset($data['featured_img'])) {
-                $fileFolder = '/storage';
-                if (!File::exists($fileFolder)) {
-                    File::makeDirectory(public_path($fileFolder), 0777, true, true);
-                }
-    
-                $file = $data['featured_img'];
-                $fileName = time() . '_' . $file->getClientOriginalName();
-    
-                $file->move(public_path($fileFolder), $fileName);
-    
-                $data['featured_img'] = $fileFolder . '/' . $fileName;
+                $featured_img = ImageHelper::resizeImage($data['featured_img']);
+                $data['featured_img'] = $featured_img['original'];
             }
             if (isset($data['banner_img'])) {
-                $fileFolder = '/storage';
-                if (!File::exists($fileFolder)) {
-                    File::makeDirectory(public_path($fileFolder), 0777, true, true);
-                }
-    
-                $file = $data['banner_img'];
-                $fileName = time() . '_' . $file->getClientOriginalName();
-    
-                $file->move(public_path($fileFolder), $fileName);
-    
-                $data['banner_img'] = $fileFolder . '/' . $fileName;
+                $banner_img = ImageHelper::resizeImage($data['banner_img']);
+                $data['banner_img'] = $banner_img['original'];
             }
         }
         $updateBLog = $this->blogManagementModelProxy->updateBlog($id, $data);
         if (isset($data['featured_img']) && $blog->featured_img) {
-            unlink(public_path($blog->featured_img));
+            ImageHelper::removeImage($blog->featured_img);
         }
         if (isset($data['banner_img']) && $blog->banner_img) {
-            unlink(public_path($blog->banner_img));
+            ImageHelper::removeImage($blog->banner_img);
         }
         return $updateBLog;
     }
