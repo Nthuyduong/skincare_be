@@ -104,5 +104,31 @@ class CategoryManagementModelProxy
 
         return $category;
     }
+
+    function getCategoriesByParentId($id, $page = 1, $limit)
+    {
+        $query = Category::query();
+
+        // select * from categories where parent_id = $id
+        $query = $query->where('parent_id', $id);
+
+        $count = $query->count();
+
+        // select * from categories where parent_id = $id limit $limit offset ($page - 1) * $limit
+        $results = $query
+            ->skip(($page - 1) * $limit)
+            ->take($limit)
+            ->get();
+
+        return [
+            'results' => $results,
+            'paginate' => [
+                'current' => $page,
+                'limit' => $limit,
+                'last' => ceil($count / $limit),
+                'count' => $count,
+            ]
+        ];
+    }
 }
 

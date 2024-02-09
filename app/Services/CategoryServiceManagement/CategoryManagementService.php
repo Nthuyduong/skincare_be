@@ -50,4 +50,9 @@ class CategoryManagementService
     {
         return $this->CategoryManagementModelProxy->getCategoryById($id);
     }
+
+    function getCategoriesByParentId($id, $page = 1, $limit = 10)
+    {
+        return $this->CategoryManagementModelProxy->getCategoriesByParentId($id, $page, $limit);
+    }
 }

@@ -46,5 +46,7 @@ Route::namespace("Api")->group(function() {
         Route::post('/', 'CategoryController@createCategory');
         Route::get('/{id}', 'CategoryController@getCategoryById');
         Route::put('/{id}', 'CategoryController@updateCategory');
+
+        Route::get('/{id}/childrens', 'CategoryController@getCategoriesByParentId');
     });
 });

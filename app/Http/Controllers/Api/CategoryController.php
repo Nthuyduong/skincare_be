@@ -118,4 +118,21 @@ class CategoryController extends ApiController
         }
     }
 
+    public function getCategoriesByParentId(string $id)
+    {
+        try {
+
+            $categories = $this->categoryManagementService->getCategoriesByParentId($id);
+
+            return response()->json([
+                'status' => self::STATUS_SUCCESS,
+                'msg' => $id,
+                'data' => $categories
+            ]);
+        } catch (ValidationException $e) {
+            return $this->clientErrorResponse('Invalid request: ' . json_encode($e->errors()), \Symfony\Component\HttpFoundation\Response::HTTP_BAD_REQUEST);
+        } catch (Exception $e) {
+            return $this->internalServerErrorResponse(__METHOD__, $e);
+        }
+    }
 }
