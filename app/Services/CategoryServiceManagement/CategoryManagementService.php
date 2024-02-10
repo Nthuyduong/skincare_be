@@ -25,9 +25,13 @@ class CategoryManagementService
 
     function createCategory($data)
     {
-        if (isset($data['feature_img'])) {
-            $feature_img = ImageHelper::resizeImage($data['feature_img']);
-            $data['feature_img'] = $feature_img['original'];
+        if (isset($data['featured_img'])) {
+            $featured_img = ImageHelper::resizeImage($data['featured_img']);
+            $data['featured_img'] = $featured_img['original'];
+        }
+        if (isset($data['banner_img'])) {
+            $banner_img = ImageHelper::resizeImage($data['banner_img']);
+            $data['banner_img'] = $banner_img['original'];
         }
         return $this->CategoryManagementModelProxy->createCategory($data);
     }
@@ -35,14 +39,21 @@ class CategoryManagementService
     function updateCategory($id, $data)
     {
         $category = $this->CategoryManagementModelProxy->findCategoryById($id);
-        if (isset($data['feature_img'])) {
-            $feature_img = ImageHelper::resizeImage($data['feature_img']);
-            $data['feature_img'] = $feature_img['original'];
+        if (isset($data['featured_img'])) {
+            $featured_img = ImageHelper::resizeImage($data['featured_img']);
+            $data['featured_img'] = $featured_img['original'];
+        }
+        if (isset($data['banner_img'])) {
+            $banner_img = ImageHelper::resizeImage($data['banner_img']);
+            $data['banner_img'] = $banner_img['original'];
         }
         $updateCategory = $this->CategoryManagementModelProxy->updateCategory($id, $data);
 
-        if (isset($data['feature_img']) && $updateCategory) {
-            ImageHelper::removeImage($category->feature_img);
+        if (isset($data['featured_img']) && $updateCategory) {
+            ImageHelper::removeImage($category->featured_img);
+        }
+        if (isset($data['banner_img']) && $category->banner_img) {
+            ImageHelper::removeImage($category->banner_img);
         }
 
         return $updateCategory;

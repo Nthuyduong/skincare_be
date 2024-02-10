@@ -52,15 +52,17 @@ class CategoryController extends ApiController
 
             $this->validate($request, [
                 'name' => 'required',
-                'description' => 'required',
-                'feature_img' => 'required',
-                'status' => 'required',
+                'slug' => 'required',
             ]);
             $data = [];
             $data['name'] = $request->input('name');
             $data['description'] = $request->input('description');
-            $data['feature_img'] = $request->file('feature_img');
+            $data['featured_img'] = $request->file('featured_img');
+            $data['banner_img'] = $request->file('banner_img');
             $data['status'] = $request->input('status');
+            $data['meta_title'] = $request->input('meta_title');
+            $data['meta_description'] = $request->input('meta_description');
+            $data['slug'] = $request->input('slug');
 
             $category = $this->categoryManagementService->createCategory($data);
 
@@ -82,15 +84,18 @@ class CategoryController extends ApiController
 
             $this->validate($request, [
                 'name' => 'required|string|max:255',
-                'description' => 'required',
-                'feature_img' => 'required',
-                'status' => 'required',
+                'slug' => 'required',
             ]);
             $data = [];
             $data['name'] = $request->input('name');
             $data['description'] = $request->input('description');
-            $data['feature_img'] = $request->file('feature_img');
+            $data['featured_img'] = $request->file('featured_img');
+            $data['banner_img'] = $request->file('banner_img');
             $data['status'] = $request->input('status');
+            $data['meta_title'] = $request->input('meta_title');
+            $data['meta_description'] = $request->input('meta_description');
+            $data['slug'] = $request->input('slug');
+
             $categories = $this->categoryManagementService->updateCategory($id, $data);
 
             return response()->json([

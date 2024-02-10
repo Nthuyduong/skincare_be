@@ -55,8 +55,15 @@ class CategoryManagementModelProxy
         $category = new Category();
         $category->name = $data['name'];
         $category->description = $data['description'];
-        $category->feature_img = $data['feature_img'];
+        $category->featured_img = $data['featured_img'];
+        $category->banner_img = $data['banner_img'];
         $category->status = $data['status'];
+        if (isset($data['parent_id'])) {
+            $category->parent_id = $data['parent_id'];
+        }
+        $category->slug = $data['slug'];
+        $category->meta_title = $data['meta_title'];
+        $category->meta_description = $data['meta_description'];
         $category->save();
         return $category;
     }
@@ -85,8 +92,12 @@ class CategoryManagementModelProxy
 
         $category->name = $data['name'] ?? $category->name;
         $category->description = $data['description'] ?? $category->description;
-        $category->feature_img = $data['feature_img'] ?? $category->feature_img;
+        $category->featured_img = $data['featured_img'] ?? $category->feature_img;
+        $category->banner_img = $data['banner_img'] ?? $category->banner_img;
         $category->status = $data['status'] ?? $category->status;
+        $category->slug = $data['slug'] ?? $category->slug;
+        $category->meta_title = $data['meta_title'] ?? $category->meta_title;
+        $category->meta_description = $data['meta_description'] ?? $category->meta_description;
 
         if (isset($data['parent_id'])) {
             $category->parent_id = $data['parent_id'];
