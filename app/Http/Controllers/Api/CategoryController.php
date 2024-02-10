@@ -58,8 +58,9 @@ class CategoryController extends ApiController
             ]);
             $data = [];
             $data['name'] = $request->input('name');
-            $data['description'] = $request->input('descripion');
-            $data['featured_img'] = $request->file('featured_img');
+            $data['description'] = $request->input('description');
+            $data['feature_img'] = $request->file('feature_img');
+            $data['status'] = $request->input('status');
 
             $category = $this->categoryManagementService->createCategory($data);
 
@@ -75,7 +76,7 @@ class CategoryController extends ApiController
         }
     }
 
-    public function updateCategory(Request $request)
+    public function updateCategory(Request $request, string $id)
     {
         try {
 
@@ -85,7 +86,11 @@ class CategoryController extends ApiController
                 'feature_img' => 'required',
                 'status' => 'required',
             ]);
-
+            $data = [];
+            $data['name'] = $request->input('name');
+            $data['description'] = $request->input('description');
+            $data['feature_img'] = $request->file('feature_img');
+            $data['status'] = $request->input('status');
             $categories = $this->categoryManagementService->updateCategory($id, $data);
 
             return response()->json([

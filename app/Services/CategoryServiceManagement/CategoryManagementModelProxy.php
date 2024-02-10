@@ -70,6 +70,11 @@ class CategoryManagementModelProxy
         ->first();
     }
 
+    function findCategoryById($id)
+    {
+        return Category::where('id', $id)->first();
+    }
+
     function updateCategory($id, $data)
     {
         $category = $this->getCategoryById($id);

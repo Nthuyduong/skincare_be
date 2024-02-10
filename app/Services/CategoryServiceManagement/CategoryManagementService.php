@@ -5,6 +5,7 @@ namespace App\Services\CategoryServiceManagement;
 use App\Exceptions\SlugExistException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\File;
+use App\Helpers\ImageHelper;
 
 class CategoryManagementService
 {
@@ -25,26 +26,26 @@ class CategoryManagementService
     function createCategory($data)
     {
         if (isset($data['feature_img'])) {
-            $fileFolder = '/storage';
-            if (!File::exists($fileFolder)) {
-                File::makeDirectory(public_path($fileFolder), 0777, true, true);
-            }
-
-            $file = $data['feature_img'];
-            $fileName = time() . '_' . $file->getClientOriginalName();
-
-            $file->move(public_path($fileFolder), $fileName);
-
-            $data['feature_img'] = $fileFolder . '/' . $fileName;
+            $feature_img = ImageHelper::resizeImage($data['feature_img']);
+            $data['feature_img'] = $feature_img['original'];
         }
         return $this->CategoryManagementModelProxy->createCategory($data);
     }
 
     function updateCategory($id, $data)
     {
-        $categories = $this->CategoryManagementModelProxy->updateCategory($id, $data);
+        $category = $this->CategoryManagementModelProxy->findCategoryById($id);
+        if (isset($data['feature_img'])) {
+            $feature_img = ImageHelper::resizeImage($data['feature_img']);
+            $data['feature_img'] = $feature_img['original'];
+        }
+        $updateCategory = $this->CategoryManagementModelProxy->updateCategory($id, $data);
 
-        return $categories;
+        if (isset($data['feature_img']) && $updateCategory) {
+            ImageHelper::removeImage($category->feature_img);
+        }
+
+        return $updateCategory;
     }
     function getCategoryById($id)
     {
