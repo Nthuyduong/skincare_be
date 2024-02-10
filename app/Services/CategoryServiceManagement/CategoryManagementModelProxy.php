@@ -98,10 +98,8 @@ class CategoryManagementModelProxy
         $category->slug = $data['slug'] ?? $category->slug;
         $category->meta_title = $data['meta_title'] ?? $category->meta_title;
         $category->meta_description = $data['meta_description'] ?? $category->meta_description;
-
-        if (isset($data['parent_id'])) {
-            $category->parent_id = $data['parent_id'];
-        }
+        $category->parent_id = $data['parent_id'] ?? $category->parent_id;
+        
         $category->save();
 
         return $category;

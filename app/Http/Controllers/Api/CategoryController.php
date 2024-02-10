@@ -63,6 +63,7 @@ class CategoryController extends ApiController
             $data['meta_title'] = $request->input('meta_title');
             $data['meta_description'] = $request->input('meta_description');
             $data['slug'] = $request->input('slug');
+            $data['parent_id'] = $request->input('parent_id');
 
             $category = $this->categoryManagementService->createCategory($data);
 
@@ -95,6 +96,7 @@ class CategoryController extends ApiController
             $data['meta_title'] = $request->input('meta_title');
             $data['meta_description'] = $request->input('meta_description');
             $data['slug'] = $request->input('slug');
+            $data['parent_id'] = $request->input('parent_id');
 
             $categories = $this->categoryManagementService->updateCategory($id, $data);
 
