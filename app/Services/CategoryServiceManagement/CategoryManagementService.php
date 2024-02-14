@@ -67,4 +67,19 @@ class CategoryManagementService
     {
         return $this->CategoryManagementModelProxy->getCategoriesByParentId($id, $page, $limit);
     }
+
+    function deleteCategory($id)
+    {
+        $category = $this->CategoryManagementModelProxy->findCategoryById($id);
+        if ($category) {
+            if ($category->featured_img) {
+                ImageHelper::removeImage($category->featured_img);
+            }
+            if ($category->banner_img) {
+                ImageHelper::removeImage($category->banner_img);
+            }
+            return $this->CategoryManagementModelProxy->deleteCategory($id);
+        }
+        return false;
+    }
 }

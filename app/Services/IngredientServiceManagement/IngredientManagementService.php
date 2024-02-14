@@ -3,6 +3,7 @@
 namespace App\Services\IngredientServiceManagement;
 
 use App\Exceptions\SlugExistException;
+use App\Helpers\ImageHelper;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\File;
 
@@ -18,32 +19,45 @@ class IngredientManagementService
 
     function getAllWithFilter($page = 1, $limit = 10, $filter = [])
     {
-        $ingredients = $this->IngredientManagementModelProxy->getAllWithFilter($page, $limit, $filter);
-        return $ingredients;
+        return $this->IngredientManagementModelProxy->getAllWithFilter($page, $limit, $filter);
     }
 
     function createIngredient($data)
     {
-        if (isset($data['feature_img'])) {
-            $fileFolder = '/uploads';
-            if (!File::exists($fileFolder)) {
-                File::makeDirectory(public_path($fileFolder), 0777, true, true);
-            }
-
-            $file = $data['feature_img'];
-            $fileName = time() . '_' . $file->getClientOriginalName();
-
-            $file->move(public_path($fileFolder), $fileName);
-
-            $data['feature_img'] = $fileFolder . '/' . $fileName;
+        if (isset($data['featured_img'])) {
+            $featured_img = ImageHelper::resizeImage($data['featured_img']);
+            $data['featured_img'] = $featured_img['original'];
         }
         return $this->IngredientManagementModelProxy->createIngredient($data);
     }
 
-    function updateCategory($id, $data)
+    function updateIngredient($id, $data)
     {
-        $ingredients = $this->IngredientManagementModelProxy->updateCategory($id, $data);
+        $ingredient = $this->IngredientManagementModelProxy->getIngredientById($id);
+        if (isset($data['featured_img'])) {
+            $featured_img = ImageHelper::resizeImage($data['featured_img']);
+            $data['featured_img'] = $featured_img['original'];
+        }
+        $updated = $this->IngredientManagementModelProxy->updateIngredient($id, $data);
 
-        return $ingredients;
+        if (isset($data['featured_img']) && $updated) {
+            ImageHelper::removeImage($ingredient->featured_img);
+        }
+
+        return $updated;
+    }
+
+    function getIngredientById($id)
+    {
+        return $this->IngredientManagementModelProxy->getIngredientById($id);
+    }
+
+    function deleteIngredient($id)
+    {
+        $ingredient = $this->IngredientManagementModelProxy->getIngredientById($id);
+        if ($ingredient) {
+            ImageHelper::removeImage($ingredient->featured_img);
+        }
+        return $this->IngredientManagementModelProxy->deleteIngredient($id);
     }
 }

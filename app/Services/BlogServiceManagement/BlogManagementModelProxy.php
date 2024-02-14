@@ -145,7 +145,10 @@ class BlogManagementModelProxy
             return null;
         }
 
+        $blog->categories()->detach();
+
         $blog->delete();
+
         return true;
     }
 }

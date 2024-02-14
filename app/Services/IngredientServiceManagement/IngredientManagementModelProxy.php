@@ -3,6 +3,8 @@
 namespace App\Services\IngredientServiceManagement;
 
 use App\Models\Category;
+use App\Models\Ingredient;
+use App\Models\IngredientDetail;
 use Illuminate\Support\Facades\Log;
 use DateTime;
 
@@ -14,7 +16,7 @@ class IngredientManagementModelProxy
 
     function getAllWithFilter($page = 1, $limit = 10, $filter = [])
     {
-        $query = Ingredient::query();
+        $query = Ingredient::with('details');
 
         $count = $query->count();
 
@@ -43,15 +45,27 @@ class IngredientManagementModelProxy
         $ingredient = new Ingredient();
         $ingredient->name = $data['name'];
         $ingredient->description = $data['description'];
-        $ingredient->feature_img = $data['feature_img'];
-        $ingredient->status = $data['status'];
+        $ingredient->featured_img = $data['featured_img'];
+        $ingredient->content = $data['content'];
         $ingredient->save();
+
+        if (isset($data['details'])) {
+            foreach ($data['details'] as $detail) {
+                $newDetail = new IngredientDetail;
+                $newDetail->ingredient_id = $ingredient->id;
+                $newDetail->name = $detail['name'];
+                $newDetail->content = $detail['content'];
+                $newDetail->save();
+            }
+        }
         return $ingredient;
     }
 
     function getIngredientById($id)
     {
-        return Ingredient::where('id', $id)->first();
+        return Ingredient::where('id', $id)
+            ->with('details')
+            ->first();
     }
 
     function updateIngredient($id, $data)
@@ -64,23 +78,28 @@ class IngredientManagementModelProxy
 
         $ingredient->name = $data['name'] ?? $ingredient->name;
         $ingredient->description = $data['description'] ?? $ingredient->description;
-        $ingredient->feature_img = $data['feature_img'] ?? $ingredient->feature_img;
-        $ingredient->status = $data['status'] ?? $ingredient->status;
-
+        $ingredient->featured_img = $data['featured_img'] ?? $ingredient->featured_img;
+        $ingredient->content = $data['content'] ?? $ingredient->content;
+       
+        if (isset($data['details'])) {
+            $ingredient->details()->delete();
+            foreach ($data['details'] as $detail) {
+                $newDetail = new IngredientDetail;
+                $newDetail->ingredient_id = $ingredient->id;
+                $newDetail->name = $detail['name'];
+                $newDetail->content = $detail['content'];
+                $newDetail->save();
+            }
+        }
+        $ingredient->save();
         return $ingredient;
     }
 
-    function updateIngredientStatus($id, $status)
+    function deleteIngredient($id)
     {
         $ingredient = $this->getIngredientById($id);
-
-        if (!$ingredient) {
-            return null;
-        }
-
-        $ingredient->status = $status;
-        $ingredient->save();
-
+        $ingredient->details()->delete();
+        $ingredient->delete();
         return $ingredient;
     }
 }

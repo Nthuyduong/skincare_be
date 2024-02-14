@@ -5,8 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Exceptions\SlugExistException;
 use App\Http\Controllers\ApiController;
 
-;
-
 use App\Models\Blog;
 use App\Services\BlogServiceManagement\BlogManagementService;
 use Illuminate\Http\Request;

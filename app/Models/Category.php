@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class Blog
@@ -11,13 +12,14 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $id
  * @property string $name
  * @property string $description
- * @property string $feature_img
+ * @property string $featured_img
  * @property int $status
  */
 class Category extends Model
 {
     use HasFactory;
 
+    use SoftDeletes;
     protected $table = 'categories';
 
     // 1-n

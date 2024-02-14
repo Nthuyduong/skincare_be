@@ -92,7 +92,7 @@ class CategoryManagementModelProxy
 
         $category->name = $data['name'] ?? $category->name;
         $category->description = $data['description'] ?? $category->description;
-        $category->featured_img = $data['featured_img'] ?? $category->feature_img;
+        $category->featured_img = $data['featured_img'] ?? $category->featured_img;
         $category->banner_img = $data['banner_img'] ?? $category->banner_img;
         $category->status = $data['status'] ?? $category->status;
         $category->slug = $data['slug'] ?? $category->slug;
@@ -143,6 +143,17 @@ class CategoryManagementModelProxy
                 'count' => $count,
             ]
         ];
+    }
+
+    function deleteCategory($id)
+    {
+        $category = $this->findCategoryById($id);
+        if ($category) {
+            $category->blogs()->detach();
+            $category->delete();
+            return $category;
+        }
+        return null;
     }
 }
 

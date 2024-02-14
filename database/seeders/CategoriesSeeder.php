@@ -16,7 +16,7 @@ class CategoriesSeeder extends Seeder
         for ($i = 0; $i < 10; $i++) {
             $category = new Category();
             $category->name = 'gios dua cay cai ve troi ' . $i;
-            $category->feature_img = null;
+            $category->featured_img = null;
             $category->description = 'category description' . $i;
             $category->status = 1;
             $category->save();

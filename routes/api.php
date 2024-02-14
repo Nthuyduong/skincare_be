@@ -46,7 +46,24 @@ Route::namespace("Api")->group(function() {
         Route::post('/', 'CategoryController@createCategory');
         Route::get('/{id}', 'CategoryController@getCategoryById');
         Route::post('/{id}', 'CategoryController@updateCategory');
+        Route::delete('/{id}', 'CategoryController@deleteCategory');
 
         Route::get('/{id}/childrens', 'CategoryController@getCategoriesByParentId');
+    });
+
+    Route::group(['prefix' => 'images'], function () {
+        Route::get('/', 'ImageController@getAll');
+        Route::post('/', 'ImageController@uploadImage');
+        Route::get('/{id}', 'ImageController@getImageById');
+        Route::post('/{id}', 'ImageController@updateImage');
+        Route::delete('/{id}', 'ImageController@deleteImage');
+    });
+
+    Route::group(['prefix' => 'ingredients'], function () {
+        Route::get('/', 'IngredientController@getAll');
+        Route::post('/', 'IngredientController@createIngredient');
+        Route::get('/{id}', 'IngredientController@getIngredientById');
+        Route::post('/{id}', 'IngredientController@updateIngredient');
+        Route::delete('/{id}', 'IngredientController@deleteIngredient');
     });
 });

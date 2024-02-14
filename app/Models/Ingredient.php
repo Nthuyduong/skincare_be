@@ -4,21 +4,28 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
- * Class Blog
+ * Class Ingredient
  * @package App\Models
  * @property int $id
  * @property string $name
  * @property string $description
  * @property string $content
- * @property string $feature_img
+ * @property string $featured_img
  * @property int $status
  */
 class Ingredient extends Model
 {
     use HasFactory;
-
+    use SoftDeletes;
     protected $table = 'ingredients';
+
+    // 1-n
+    public function details()
+    {
+        return $this->hasMany(IngredientDetail::class, 'ingredient_id', 'id');
+    }
 
 }

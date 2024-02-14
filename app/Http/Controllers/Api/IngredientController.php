@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Services\IngredientServiceManagement\IngredientManagementService;
 use Illuminate\Http\Request;
 use Exception;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
 class IngredientController extends ApiController
@@ -51,14 +52,14 @@ class IngredientController extends ApiController
 
             $this->validate($request, [
                 'name' => 'required',
-                'description' => 'required',
-                'feature_img' => 'required',
-                'status' => 'required',
             ]);
             $data = [];
             $data['name'] = $request->input('name');
             $data['description'] = $request->input('descripion');
             $data['featured_img'] = $request->file('featured_img');
+            $data['content'] = $request->input('content');
+            // details is an array of objects json
+            $data['details'] = json_decode($request->input('details'), true);
 
             $ingredients = $this->ingredientManagementService->createIngredient($data);
 
@@ -74,17 +75,15 @@ class IngredientController extends ApiController
         }
     }
 
-    public function updateIngredient(Request $request)
+    public function updateIngredient(Request $request, string $id)
     {
         try {
-
-            $this->validate($request, [
-                'name' => 'required|string|max:255',
-                'description' => 'required',
-                'feature_img' => 'required',
-                'content' => 'required',
-                'status' => 'required',
-            ]);
+            $data = [];
+            $data['name'] = $request->input('name');
+            $data['description'] = $request->input('descripion');
+            $data['featured_img'] = $request->file('featured_img');
+            $data['content'] = $request->input('content');
+            $data['details'] = json_decode($request->input('details'), true);
 
             $ingredients = $this->ingredientManagementService->updateIngredient($id, $data);
 
@@ -95,6 +94,38 @@ class IngredientController extends ApiController
             ]);
         } catch (ValidationException $e) {
             return $this->clientErrorResponse('Invalid request: ' . json_encode($e->errors()), \Symfony\Component\HttpFoundation\Response::HTTP_BAD_REQUEST);
+        } catch (Exception $e) {
+            return $this->internalServerErrorResponse(__METHOD__, $e);
+        }
+    }
+
+    public function deleteIngredient($id)
+    {
+        try {
+            $ingredients = $this->ingredientManagementService->deleteIngredient($id);
+
+            return response()->json([
+                'data' => $ingredients,
+                'status' => self::STATUS_SUCCESS,
+                'msg' => 'success',
+            ]);
+
+        } catch (ValidationException $e) {
+            return $this->clientErrorResponse('Invalid request: ' . json_encode($e->errors()), \Symfony\Component\HttpFoundation\Response::HTTP_BAD_REQUEST);
+        } catch (Exception $e) {
+            return $this->internalServerErrorResponse(__METHOD__, $e);
+        }
+    }
+
+    public function getIngredientById(string $id)
+    {
+        try {
+            $ingredient = $this->ingredientManagementService->getIngredientById($id);
+            return response()->json([
+                'data' => $ingredient,
+                'status' => self::STATUS_SUCCESS,
+                'msg' => 'success',
+            ]);
         } catch (Exception $e) {
             return $this->internalServerErrorResponse(__METHOD__, $e);
         }
