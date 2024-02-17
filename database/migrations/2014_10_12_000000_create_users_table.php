@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            // rememberToken() creates a new column in the users table to store the "remember me" token.
             $table->rememberToken();
             $table->timestamps();
         });

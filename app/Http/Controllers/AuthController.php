@@ -113,4 +113,20 @@ class AuthController extends ApiController
             'expires_in' => Auth::factory()->getTTL() * 60
         ]);
     }
+
+    public function loginAdmin() {
+        $credentials = request(['email', 'password']);
+
+        if (! $token = auth('admin')->attempt($credentials)) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        return $this->respondWithToken($token);
+    }
+
+    public function logoutAdmin() {
+        auth('admin')->logout();
+
+        return response()->json(['message' => 'Successfully logged out']);
+    }
 }

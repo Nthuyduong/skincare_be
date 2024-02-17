@@ -26,44 +26,69 @@ Route::group(['middleware' => 'auth:api'], function ($router) {
     Route::post('/refresh', 'AuthController@refresh');
     Route::post('/me', 'AuthController@me');
 });
+Route::prefix('/admin')->group(function() {
+    Route::post('/login', 'AuthController@loginAdmin');
+});
+Route::group(['middleware' => 'auth:admin'], function() {
+    Route::prefix('/admin')->group(function() {
+        Route::post('/logout', 'AuthController@logoutAdmin');
+    });
+});
 
-Route::namespace("Api")->group(function() {
+Route::namespace("Api")->group(function() { 
+
     Route::get('/test', 'TestController@test');
-
+    Route::prefix('/admin')->group(function() {
+        Route::group(['middleware' => 'auth:admin'], function ($router) {
+            Route::group(['prefix' => 'categories'], function () {
+                Route::get('/', 'CategoryController@getAll');
+                Route::post('/', 'CategoryController@createCategory');
+                Route::get('/{id}', 'CategoryController@getCategoryById');
+                Route::post('/{id}', 'CategoryController@updateCategory');
+                Route::delete('/{id}', 'CategoryController@deleteCategory');
+                Route::get('/{id}/childrens', 'CategoryController@getCategoriesByParentId');
+            });
+            Route::group(['prefix' => 'images'], function () {
+                Route::get('/', 'ImageController@getAll');
+                Route::post('/', 'ImageController@uploadImage');
+                Route::get('/{id}', 'ImageController@getImageById');
+                Route::post('/{id}', 'ImageController@updateImage');
+                Route::delete('/{id}', 'ImageController@deleteImage');
+            });
+            Route::group(['prefix' => 'blogs'], function () {
+                Route::get('/', 'BlogController@getAll');
+                Route::post('/', 'BlogController@createBlog');
+                Route::get('/{id}', 'BlogController@getBlogById');
+                Route::post('/{id}', 'BlogController@updateBlog');
+        
+                Route::get('/slug/{slug}', 'BlogController@getBlogBySlug');
+            });
+            Route::group(['prefix' => 'ingredients'], function () {
+                Route::get('/', 'IngredientController@getAll');
+                Route::post('/', 'IngredientController@createIngredient');
+                Route::get('/{id}', 'IngredientController@getIngredientById');
+                Route::post('/{id}', 'IngredientController@updateIngredient');
+                Route::delete('/{id}', 'IngredientController@deleteIngredient');
+            });
+        });
+    });
     Route::group(['prefix' => 'blogs'], function () {
         Route::get('/', 'BlogController@getAll');
-        Route::post('/', 'BlogController@createBlog');
-        // bài tập về nhà
         Route::get('/{id}', 'BlogController@getBlogById');
-        Route::post('/{id}', 'BlogController@updateBlog');
-
         Route::get('/slug/{slug}', 'BlogController@getBlogBySlug');
     });
 
     Route::group(['prefix' => 'categories'], function () {
         Route::get('/', 'CategoryController@getAll');
-        
-        Route::post('/', 'CategoryController@createCategory');
         Route::get('/{id}', 'CategoryController@getCategoryById');
-        Route::post('/{id}', 'CategoryController@updateCategory');
-        Route::delete('/{id}', 'CategoryController@deleteCategory');
-
         Route::get('/{id}/childrens', 'CategoryController@getCategoriesByParentId');
     });
 
-    Route::group(['prefix' => 'images'], function () {
-        Route::get('/', 'ImageController@getAll');
-        Route::post('/', 'ImageController@uploadImage');
-        Route::get('/{id}', 'ImageController@getImageById');
-        Route::post('/{id}', 'ImageController@updateImage');
-        Route::delete('/{id}', 'ImageController@deleteImage');
-    });
+    
 
     Route::group(['prefix' => 'ingredients'], function () {
         Route::get('/', 'IngredientController@getAll');
-        Route::post('/', 'IngredientController@createIngredient');
         Route::get('/{id}', 'IngredientController@getIngredientById');
-        Route::post('/{id}', 'IngredientController@updateIngredient');
-        Route::delete('/{id}', 'IngredientController@deleteIngredient');
     });
+
 });
