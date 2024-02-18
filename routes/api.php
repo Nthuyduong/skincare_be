@@ -32,6 +32,7 @@ Route::prefix('/admin')->group(function() {
 Route::group(['middleware' => 'auth:admin'], function() {
     Route::prefix('/admin')->group(function() {
         Route::post('/logout', 'AuthController@logoutAdmin');
+        Route::get('/info', 'AuthController@adminInfo');
     });
 });
 

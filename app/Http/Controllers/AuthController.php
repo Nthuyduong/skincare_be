@@ -129,4 +129,8 @@ class AuthController extends ApiController
 
         return response()->json(['message' => 'Successfully logged out']);
     }
+
+    public function adminInfo() {
+        return response()->json(auth('admin')->user());
+    }
 }
