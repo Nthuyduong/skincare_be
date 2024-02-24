@@ -93,6 +93,8 @@ class BlogManagementModelProxy
         $blog->publish_date = $data['publish_date'];
         $blog->featured_img = $data['featured_img'];
         $blog->banner_img = $data['banner_img'];
+        $blog->meta_title = $data['meta_title'];
+        $blog->meta_description = $data['meta_description'];
         $blog->save();
         $blog->categories()->attach($data['categories']);
         return $blog;
@@ -129,6 +131,8 @@ class BlogManagementModelProxy
         $blog->summary = $data['summary'] ?? $blog->summary;
         $blog->featured_img = $data['featured_img'] ?? $blog->featured_img;
         $blog->banner_img = $data['banner_img'] ?? $blog->banner_img;
+        $blog->meta_title = $data['meta_title'] ?? $blog->meta_title;
+        $blog->meta_description = $data['meta_description'] ?? $blog->meta_description;
 
         if (isset($data['categories'])) {
             $blog->categories()->sync($data['categories']);
@@ -150,5 +154,20 @@ class BlogManagementModelProxy
         $blog->delete();
 
         return true;
+    }
+
+    function getNewest($data) {
+        return Blog::with('categories')->orderBy('publish_date', 'desc')->limit($data['limit'])->get();
+    }
+
+    function getPopular($data) {
+        $query = Blog::with('categories');
+        $query = $query->orderBy('view_count', 'desc');
+        if (isset($data['days'])) {
+            $fromDate = new DateTime();
+            $fromDate->modify('-' . $data['days'] . ' day');
+            $query = $query->where('publish_date', '>=', $fromDate);
+        }
+        return $query->limit($data['limit'])->get();
     }
 }

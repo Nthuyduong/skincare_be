@@ -89,7 +89,6 @@ class CategoryManagementModelProxy
         if (!$category) {
             return null;
         }
-
         $category->name = $data['name'] ?? $category->name;
         $category->description = $data['description'] ?? $category->description;
         $category->featured_img = $data['featured_img'] ?? $category->featured_img;

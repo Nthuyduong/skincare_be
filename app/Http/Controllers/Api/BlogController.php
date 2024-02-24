@@ -82,6 +82,8 @@ class BlogController extends ApiController
             $data['featured_img'] = $request->file('featured_img');
             $data['banner_img'] = $request->file('banner_img');
             $data['categories'] = $request->input('categories'); // [1,2,3]
+            $data['meta_title'] = $request->input('meta_title');
+            $data['meta_description'] = $request->input('meta_description');
 
             $blog = $this->blogManagementService->createBlog($data);
 
@@ -150,6 +152,8 @@ class BlogController extends ApiController
             $data['summary'] = $request->input('summary');
             $data['featured_img'] = $request->file('featured_img');
             $data['banner_img'] = $request->file('banner_img');
+            $data['meta_title'] = $request->input('meta_title');
+            $data['meta_description'] = $request->input('meta_description');
 
             $blogs = $this->blogManagementService->updateBlog($id, $data);
 
@@ -183,4 +187,37 @@ class BlogController extends ApiController
         }
     }
 
+    public function getNewest(Request $request) {
+        try {
+            $data = [];
+            $data['limit'] = $request->input('limit', 10);
+
+            $blogs = $this->blogManagementService->getNewest($data);
+            
+            return response()->json([
+                'data' => $blogs,
+                'status' => self::STATUS_SUCCESS,
+                'msg' => 'success',
+            ]);
+        } catch (Exception $e) {
+            return $this->internalServerErrorResponse(__METHOD__, $e);
+        }
+    }
+
+    public function getPopular(Request $request) {
+        try {
+            $data = [];
+            $data['limit'] = $request->input('limit', 10);
+            $data['days'] = $request->input('days');
+
+            $blogs = $this->blogManagementService->getPopular($data);
+            return response()->json([
+                'data' => $blogs,
+                'status' => self::STATUS_SUCCESS,
+                'msg' => 'success',
+            ]);
+        } catch (Exception $e) {
+            return $this->internalServerErrorResponse(__METHOD__, $e);
+        }
+    }
 }

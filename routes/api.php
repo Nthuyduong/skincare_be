@@ -75,9 +75,11 @@ Route::namespace("Api")->group(function() {
         });
     });
     Route::group(['prefix' => 'blogs'], function () {
+        Route::get('/newest', 'BlogController@getNewest');
+        Route::get('/popular', 'BlogController@getPopular');
+        Route::get('/slug/{slug}', 'BlogController@getBlogBySlug');
         Route::get('/', 'BlogController@getAll');
         Route::get('/{id}', 'BlogController@getBlogById');
-        Route::get('/slug/{slug}', 'BlogController@getBlogBySlug');
     });
 
     Route::group(['prefix' => 'categories'], function () {
@@ -85,8 +87,6 @@ Route::namespace("Api")->group(function() {
         Route::get('/{id}', 'CategoryController@getCategoryById');
         Route::get('/{id}/childrens', 'CategoryController@getCategoriesByParentId');
     });
-
-    
 
     Route::group(['prefix' => 'ingredients'], function () {
         Route::get('/', 'IngredientController@getAll');

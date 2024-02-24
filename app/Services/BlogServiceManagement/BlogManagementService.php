@@ -79,4 +79,12 @@ class BlogManagementService
     {
         return $this->blogManagementModelProxy->deleteBlog($id);
     }
+
+    function getNewest($data) {
+        return $this->blogManagementModelProxy->getNewest($data);
+    }
+
+    function getPopular($data) {
+        return $this->blogManagementModelProxy->getPopular($data);
+    }
 }
