@@ -116,7 +116,7 @@ class AuthController extends ApiController
 
     public function loginAdmin() {
         $credentials = request(['email', 'password']);
-
+    
         if (! $token = auth('admin')->attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
@@ -132,5 +132,9 @@ class AuthController extends ApiController
 
     public function adminInfo() {
         return response()->json(auth('admin')->user());
+    }
+
+    public function refreshAdmin() {
+        return $this->respondWithToken(Auth::refresh());
     }
 }

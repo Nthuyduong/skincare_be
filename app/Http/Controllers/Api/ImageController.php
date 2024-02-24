@@ -76,14 +76,15 @@ class ImageController extends ApiController
         }
     }
 
-    public function updateImage(Request $request, string $id)
+    public function updateImage(Request $request)
     {
         try {
             $data = [];
+            $ids = $request->input('ids');
             $data['alt'] = $request->input('alt');
             $data['suggest'] = $request->input('suggest');
 
-            $image = $this->imageManagementService->updateImage($id, $data);
+            $image = $this->imageManagementService->updateImage($ids, $data);
             return response()->json([
                 'data' => $image,
                 'status' => self::STATUS_SUCCESS,
@@ -94,10 +95,11 @@ class ImageController extends ApiController
         }
     }
 
-    public function deleteImage(string $id)
+    public function deleteImage(Request $request)
     {
         try {
-            $image = $this->imageManagementService->deleteImage($id);
+            $ids = $request->input('ids');
+            $image = $this->imageManagementService->deleteImage($ids);
             return response()->json([
                 'data' => $image,
                 'status' => self::STATUS_SUCCESS,

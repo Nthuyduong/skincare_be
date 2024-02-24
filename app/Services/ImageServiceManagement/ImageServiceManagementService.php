@@ -22,6 +22,7 @@ class ImageServiceManagementService
 
     function uploadImage($data)
     {
+        Log::info($data['files']);
         if (isset($data['files'])) {
             foreach ($data['files'] as $file) {
                 $payload = [];
@@ -43,17 +44,23 @@ class ImageServiceManagementService
         return $this->imageServiceManagementModelProxy->getImageById($id);
     }
 
-    function updateImage($id, $data)
+    function updateImage($ids, $data)
     {
-        return $this->imageServiceManagementModelProxy->updateImage($id, $data);
+        foreach ($ids as $id) {
+            $this->imageServiceManagementModelProxy->updateImage($id, $data);
+        }
+        return [];
     }
 
-    function deleteImage($id)
+    function deleteImage($ids)
     {
-        $image = $this->imageServiceManagementModelProxy->getImageById($id);
-        if ($image) {
-            ImageHelper::removeImage($image->url);
+        foreach ($ids as $id) {
+            $image = $this->imageServiceManagementModelProxy->getImageById($id);
+            if ($image) {
+                ImageHelper::removeImage($image->url);
+            }
+            $this->imageServiceManagementModelProxy->deleteImage($id);
         }
-        return $this->imageServiceManagementModelProxy->deleteImage($id);
+        return [];
     }
 }

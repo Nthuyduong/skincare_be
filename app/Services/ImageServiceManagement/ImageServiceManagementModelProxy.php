@@ -20,6 +20,7 @@ class ImageServiceManagementModelProxy {
         $results = $query
             ->skip(($page - 1) * $limit)
             ->take($limit)
+            ->orderBy('created_at', 'desc')
             ->get();
         // select * from images
         return [
