@@ -19,7 +19,8 @@ class BlogManagementModelProxy
         // select * from blogs
         $count = $query->count();
 
-        $query = $query->with('categories');
+        $query = $query
+            ->with('categories');
 
         // check nếu request có filter có search thì thêm vào query
         if (isset($filter['search'])) {
@@ -64,6 +65,10 @@ class BlogManagementModelProxy
 
         // select * from blogs limit ($limit) offset (($page - 1) * $limit)
         $results = $query
+            ->select(
+                'id', 'title', 'slug', 'status', 'publish_date', 'view_count', 'created_at', 'updated_at',
+                'meta_title', 'meta_description', 'featured_img', 'banner_img', 'author', 'summary', 'tag',
+            )
             ->skip(($page - 1) * $limit)
             ->take($limit)
             ->get();
@@ -157,7 +162,13 @@ class BlogManagementModelProxy
     }
 
     function getNewest($data) {
-        return Blog::with('categories')->orderBy('publish_date', 'desc')->limit($data['limit'])->get();
+        return Blog::with('categories')
+            ->select(
+                'id', 'title', 'slug', 'status', 'publish_date', 'view_count', 'created_at', 'updated_at',
+                'meta_title', 'meta_description', 'featured_img', 'banner_img', 'author', 'summary', 'tag',
+            )
+            ->orderBy('publish_date', 'desc')
+            ->limit($data['limit'])->get();
     }
 
     function getPopular($data) {
@@ -168,6 +179,11 @@ class BlogManagementModelProxy
             $fromDate->modify('-' . $data['days'] . ' day');
             $query = $query->where('publish_date', '>=', $fromDate);
         }
-        return $query->limit($data['limit'])->get();
+        return $query
+            ->select(
+                'id', 'title', 'slug', 'status', 'publish_date', 'view_count', 'created_at', 'updated_at',
+                'meta_title', 'meta_description', 'featured_img', 'banner_img', 'author', 'summary', 'tag',
+            )
+            ->limit($data['limit'])->get();
     }
 }
