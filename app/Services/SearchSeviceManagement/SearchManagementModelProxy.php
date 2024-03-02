@@ -48,12 +48,21 @@ class SearchManagementModelProxy
                 DB::raw("'ingredient' as table_name"),
             );
 
-        $results = $queryBlog
-            ->unionAll($queryIngredient)
-            ->skip(($page - 1) * $limit)
+        $combine = $queryBlog
+            ->unionAll($queryIngredient);
+        $count = $combine->count();
+        $results = $combine->skip(($page - 1) * $limit)
             ->take($limit)
             ->get();
-
-        return $results;
+       
+        return [
+            'results' => $results,
+            'paginate' => [
+                'current' => $page,
+                'limit' => $limit,
+                'last' => ceil($count / $limit),
+                'count' => $count,
+            ]
+        ];
     }
 }
