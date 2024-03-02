@@ -92,5 +92,5 @@ Route::namespace("Api")->group(function() {
         Route::get('/', 'IngredientController@getAll');
         Route::get('/{id}', 'IngredientController@getIngredientById');
     });
-
+    Route::get('/search', 'SearchController@search');
 });
