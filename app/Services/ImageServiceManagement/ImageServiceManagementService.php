@@ -22,7 +22,7 @@ class ImageServiceManagementService
 
     function uploadImage($data)
     {
-        Log::info($data['files']);
+        $results = [];
         if (isset($data['files'])) {
             foreach ($data['files'] as $file) {
                 $payload = [];
@@ -33,10 +33,11 @@ class ImageServiceManagementService
                 $payload['url'] = $image['original'];
                 $payload['alt'] = $data['alt'] ?? '';
                 $payload['suggest'] = $data['suggest'] ?? '';
-                $this->imageServiceManagementModelProxy->createImage($payload);
+                $image = $this->imageServiceManagementModelProxy->createImage($payload);
+                array_push($results, $image);
             }
         }
-        return null;
+        return $results;
     }
 
     function getImageById($id)
