@@ -82,7 +82,7 @@ class IngredientManagementModelProxy
         $ingredient->content = $data['content'] ?? $ingredient->content;
        
         if (isset($data['details'])) {
-            $ingredient->details()->delete();
+            $ingredient->details()->forceDelete();
             foreach ($data['details'] as $detail) {
                 $newDetail = new IngredientDetail;
                 $newDetail->ingredient_id = $ingredient->id;
@@ -98,7 +98,7 @@ class IngredientManagementModelProxy
     function deleteIngredient($id)
     {
         $ingredient = $this->getIngredientById($id);
-        $ingredient->details()->delete();
+        $ingredient->details()->forceDelete();
         $ingredient->delete();
         return $ingredient;
     }
