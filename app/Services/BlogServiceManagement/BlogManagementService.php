@@ -75,6 +75,31 @@ class BlogManagementService
         return $updateBLog;
     }
 
+    function publishBlog($id)
+    {
+        return $this->blogManagementModelProxy->publishBlog($id);
+    }
+
+    function updateStatusBlogs($ids, $status)
+    {
+        return $this->blogManagementModelProxy->updateStatusBlogs($ids, $status);
+    }
+
+    function updateViewCount($id)
+    {
+        return $this->blogManagementModelProxy->updateViewCount($id);
+    }
+
+    function updateShareCount($id)
+    {
+        return $this->blogManagementModelProxy->updateShareCount($id);
+    }
+
+    function deleteBlogs($ids)
+    {
+        return $this->blogManagementModelProxy->deleteBlogs($ids);
+    }
+
     function deleteBlog($id)
     {
         return $this->blogManagementModelProxy->deleteBlog($id);

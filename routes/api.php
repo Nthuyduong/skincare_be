@@ -58,12 +58,18 @@ Route::namespace("Api")->group(function() {
                 Route::post('/delete', 'ImageController@deleteImage');
             });
             Route::group(['prefix' => 'blogs'], function () {
+                Route::post('/publish/{id}', 'BlogController@publishBlog');
+                Route::post('/update/status', 'BlogController@updateStatusBlogs');
+                Route::post('/delete-many', 'BlogController@deleteBlogs');
+                Route::get('/slug/{slug}', 'BlogController@getBlogBySlug');
                 Route::get('/', 'BlogController@getAll');
                 Route::post('/', 'BlogController@createBlog');
+               
                 Route::get('/{id}', 'BlogController@getBlogById');
                 Route::post('/{id}', 'BlogController@updateBlog');
+                Route::delete('/{id}', 'BlogController@deleteBlog');
         
-                Route::get('/slug/{slug}', 'BlogController@getBlogBySlug');
+                
             });
             Route::group(['prefix' => 'ingredients'], function () {
                 Route::get('/', 'IngredientController@getAll');
@@ -78,6 +84,8 @@ Route::namespace("Api")->group(function() {
         Route::get('/newest', 'BlogController@getNewest');
         Route::get('/popular', 'BlogController@getPopular');
         Route::get('/slug/{slug}', 'BlogController@getBlogBySlug');
+        Route::post('/update/view-count', 'BlogController@updateViewCount');
+        Route::post('/update/share-count', 'BlogController@updateShareCount');
         Route::get('/', 'BlogController@getAll');
         Route::get('/{id}', 'BlogController@getBlogById');
     });

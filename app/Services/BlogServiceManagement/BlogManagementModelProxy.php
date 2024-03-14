@@ -3,8 +3,10 @@
 namespace App\Services\BlogServiceManagement;
 
 use App\Models\Blog;
+use App\Models\BlogDetail;
 use Illuminate\Support\Facades\Log;
 use DateTime;
+use Illuminate\Support\Facades\DB;
 
 class BlogManagementModelProxy
 {
@@ -86,23 +88,38 @@ class BlogManagementModelProxy
 
     function createBlog($data)
     {
-        $blog = new Blog();
-        $blog->title = $data['title'];
-        $blog->content = $data['content'];
-        $blog->content_draft = $data['content_draft'];
-        $blog->summary = $data['summary'];
-        $blog->tag = $data['tag'];
-        $blog->slug = $data['slug'];
-        $blog->status = $data['status'];
-        $blog->author = $data['author'];
-        $blog->publish_date = $data['publish_date'];
-        $blog->featured_img = $data['featured_img'];
-        $blog->banner_img = $data['banner_img'];
-        $blog->meta_title = $data['meta_title'];
-        $blog->meta_description = $data['meta_description'];
-        $blog->save();
-        $blog->categories()->attach($data['categories']);
-        return $blog;
+        return DB::transaction(function () use ($data){
+            Log::info($data);
+            // tạo mới blog
+            $blog = new Blog();
+            $blog->title = $data['title'];
+            $blog->summary = $data['summary'];
+            $blog->tag = $data['tag'];
+            $blog->slug = $data['slug'];
+            $blog->status = $data['status'];
+            $blog->author = $data['author'];
+            if ($data['status'] == Blog::STATUS_SHOW) {
+                $blog->publish_date = new DateTime();
+            }
+            $blog->featured_img = $data['featured_img'];
+            $blog->banner_img = $data['banner_img'];
+            $blog->meta_title = $data['meta_title'];
+            $blog->meta_description = $data['meta_description'];
+            $blog->excerpt = $data['excerpt'];
+            $blog->save();
+
+            // tạo mới blog detail
+            $detail = new BlogDetail();
+            $detail->content = $data['content'];
+            $detail->content_draft = $data['content'];
+            $blog->detail()->save($detail);
+
+            // thêm category cho blog
+            $blog->categories()->attach($data['categories']);
+
+            return $blog;
+        });
+        
     }
 
     function checkSlugExist($slug)
@@ -116,34 +133,97 @@ class BlogManagementModelProxy
 
     function getBlogById($id)
     {
-        return Blog::where('id', $id)->with('categories')->first();
+        return Blog::where('id', $id)
+            ->with('categories')
+            ->with('detail')
+            ->first();
     }
 
     function getBlogBySlug($slug)
     {
-        return Blog::where('slug', $slug)->with('categories')->first();
+        return Blog::where('slug', $slug)
+            ->with('detail')
+            ->with('categories')
+            ->first();
     }
 
     function updateBlog($id, $data)
     {
-        $blog = $this->getBlogById($id);
-        if (!$blog) {
-            return null;
-        }
-        $blog->title = $data['title'] ?? $blog->title;
-        $blog->content = $data['content'] ?? $blog->content;
-        $blog->slug = $data['slug'] ?? $blog->slug;
-        $blog->summary = $data['summary'] ?? $blog->summary;
-        $blog->featured_img = $data['featured_img'] ?? $blog->featured_img;
-        $blog->banner_img = $data['banner_img'] ?? $blog->banner_img;
-        $blog->meta_title = $data['meta_title'] ?? $blog->meta_title;
-        $blog->meta_description = $data['meta_description'] ?? $blog->meta_description;
+        return DB::transaction(function() use ($id, $data){
+            $blog = $this->getBlogById($id);
+            if (!$blog) {
+                return null;
+            }
+            $blog->title = $data['title'] ?? $blog->title;
+            $blog->slug = $data['slug'] ?? $blog->slug;
+            $blog->summary = $data['summary'] ?? $blog->summary;
+            $blog->featured_img = $data['featured_img'] ?? $blog->featured_img;
+            $blog->banner_img = $data['banner_img'] ?? $blog->banner_img;
+            $blog->meta_title = $data['meta_title'] ?? $blog->meta_title;
+            $blog->meta_description = $data['meta_description'] ?? $blog->meta_description;
+            $blog->author = $data['author'] ?? $blog->author;
+            $blog->tag = $data['tag'] ?? $blog->tag;
+            $blog->status = $data['status'] ?? $blog->status;
+            $blog->excerpt = $data['excerpt'] ?? $blog->excerpt;
 
-        if (isset($data['categories'])) {
-            $blog->categories()->sync($data['categories']);
+    
+            if (isset($data['content'])) {
+                $blog->detail->content_draft = $data['content'];
+                $blog->detail->save();
+            }
+    
+            if (isset($data['categories'])) {
+                $blog->categories()->sync($data['categories']);
+            }
+            $blog->save();
+            return $this->getBlogById($id);
+        });
+    }
+
+    function publishBlog($id)
+    {
+        return DB::transaction(function() use ($id){
+            $blog = $this->getBlogById($id);
+            if (!$blog) {
+                return null;
+            }
+            $blog->status = Blog::STATUS_SHOW;
+            $blog->publish_date = new DateTime();
+
+            $blog->detail->content = $blog->detail->content_draft;
+            $blog->detail->save();
+
+            $blog->save();
+            return $blog;
+        });
+        
+    }
+
+    function updateStatusBlogs($ids, $status)
+    {
+        return Blog::whereIn('id', $ids)->update(['status' => $status]);
+    }
+
+    function updateViewCount($id)
+    {
+        return Blog::where('id', $id)->increment('view_count');
+    }
+
+    function updateShareCount($id)
+    {
+        return Blog::where('id', $id)->increment('share_count');
+    }
+
+    function deleteBlogs($ids)
+    {
+        foreach ($ids as $id) {
+            $blog = $this->getBlogById($id);
+            if ($blog) {
+                $blog->categories()->detach();
+                $blog->detail()->delete();
+            }
         }
-        $blog->save();
-        return $this->getBlogById($id);
+        return Blog::whereIn('id', $ids)->delete();
     }
 
     function deleteBlog($id)
@@ -155,7 +235,7 @@ class BlogManagementModelProxy
         }
 
         $blog->categories()->detach();
-
+        $blog->detail()->delete();
         $blog->delete();
 
         return true;

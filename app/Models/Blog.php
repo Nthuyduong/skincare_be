@@ -19,20 +19,33 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int $view_count
  * @property int $comment_count
  * @property string $featured_image
+ * @property string $banner_image
+ * @property string $meta_title
+ * @property string $meta_description
+ * @property string $author
+ * @property string $publish_date
+ * @property string $created_at
+ * @property string $updated_at
+ * @property string $deleted_at
+ * @property string $excerpt
  */
 class Blog extends Model
 {
     use HasFactory;
 
     protected $table = 'blogs';
-
-    const STATUS_DRAFT = 0;
-    const STATUS_PUBLISHED = 1;
+    
+    const STATUS_HIDDEN = 0;
+    const STATUS_SHOW = 1;
 
     use SoftDeletes;
 
     // n-n
     public function categories() {
         return $this->belongsToMany(Category::class, 'blogs_categories', 'blog_id', 'category_id');
+    }
+
+    public function detail() {
+        return $this->hasOne(BlogDetail::class, 'blog_id', 'id');
     }
 }

@@ -120,7 +120,8 @@ return [
     |
     */
 
-    'refresh_ttl' => env('JWT_REFRESH_TTL', 20160),
+    // refresh token in 3 days
+    'refresh_ttl' => env('JWT_REFRESH_TTL', 4320),
 
     /*
     |--------------------------------------------------------------------------

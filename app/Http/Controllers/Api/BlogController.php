@@ -72,18 +72,17 @@ class BlogController extends ApiController
             $data = [];
             $data['title'] = $request->input('title');
             $data['content'] = $request->input('content');
-            $data['content_draft'] = $request->input('content_draft');
             $data['summary'] = $request->input('summary');
             $data['tag'] = $request->input('tag');
             $data['slug'] = $request->input('slug');
             $data['status'] = $request->input('status');
             $data['author'] = $request->input('author');
-            $data['publish_date'] = $request->input('publish_date');
             $data['featured_img'] = $request->file('featured_img');
             $data['banner_img'] = $request->file('banner_img');
             $data['categories'] = $request->input('categories'); // [1,2,3]
             $data['meta_title'] = $request->input('meta_title');
             $data['meta_description'] = $request->input('meta_description');
+            $data['excerpt'] = $request->input('excerpt');
 
             $blog = $this->blogManagementService->createBlog($data);
 
@@ -154,6 +153,10 @@ class BlogController extends ApiController
             $data['banner_img'] = $request->file('banner_img');
             $data['meta_title'] = $request->input('meta_title');
             $data['meta_description'] = $request->input('meta_description');
+            $data['author'] = $request->input('author');
+            $data['tag'] = $request->input('tag');
+            $data['status'] = $request->input('status');
+            $data['excerpt'] = $request->input('excerpt');
 
             $blogs = $this->blogManagementService->updateBlog($id, $data);
 
@@ -162,6 +165,96 @@ class BlogController extends ApiController
                 'status' => self::STATUS_SUCCESS,
                 'msg' => $id,
             ]);
+        } catch (ValidationException $e) {
+            return $this->clientErrorResponse('Invalid request: ' . json_encode($e->errors()), \Symfony\Component\HttpFoundation\Response::HTTP_BAD_REQUEST);
+        } catch (Exception $e) {
+            return $this->internalServerErrorResponse(__METHOD__, $e);
+        }
+    }
+
+    public function publishBlog(string $id) {
+        try {
+            $blogs = $this->blogManagementService->publishBlog($id);
+
+            return response()->json([
+                'data' => $blogs,
+                'status' => self::STATUS_SUCCESS,
+                'msg' => 'success',
+            ]);
+
+        } catch (ValidationException $e) {
+            return $this->clientErrorResponse('Invalid request: ' . json_encode($e->errors()), \Symfony\Component\HttpFoundation\Response::HTTP_BAD_REQUEST);
+        } catch (Exception $e) {
+            return $this->internalServerErrorResponse(__METHOD__, $e);
+        }
+    }
+
+    public function updateStatusBlogs(Request $request) {
+        try {
+            $ids = $request->input('ids');
+            $status = $request->input('status');
+
+            $blogs = $this->blogManagementService->updateStatusBlogs($ids, $status);
+
+            return response()->json([
+                'data' => $blogs,
+                'status' => self::STATUS_SUCCESS,
+                'msg' => 'success',
+            ]);
+
+        } catch (ValidationException $e) {
+            return $this->clientErrorResponse('Invalid request: ' . json_encode($e->errors()), \Symfony\Component\HttpFoundation\Response::HTTP_BAD_REQUEST);
+        } catch (Exception $e) {
+            return $this->internalServerErrorResponse(__METHOD__, $e);
+        }
+    }
+
+    public function updateViewCount(string $id) {
+        try {
+            $blogs = $this->blogManagementService->updateViewCount($id);
+
+            return response()->json([
+                'data' => $blogs,
+                'status' => self::STATUS_SUCCESS,
+                'msg' => 'success',
+            ]);
+
+        } catch (ValidationException $e) {
+            return $this->clientErrorResponse('Invalid request: ' . json_encode($e->errors()), \Symfony\Component\HttpFoundation\Response::HTTP_BAD_REQUEST);
+        } catch (Exception $e) {
+            return $this->internalServerErrorResponse(__METHOD__, $e);
+        }
+    }
+
+    public function updateShareCount(string $id) {
+        try {
+            $blogs = $this->blogManagementService->updateShareCount($id);
+
+            return response()->json([
+                'data' => $blogs,
+                'status' => self::STATUS_SUCCESS,
+                'msg' => 'success',
+            ]);
+
+        } catch (ValidationException $e) {
+            return $this->clientErrorResponse('Invalid request: ' . json_encode($e->errors()), \Symfony\Component\HttpFoundation\Response::HTTP_BAD_REQUEST);
+        } catch (Exception $e) {
+            return $this->internalServerErrorResponse(__METHOD__, $e);
+        }
+    }
+
+    function deleteBlogs(Request $request) {
+        try {
+            $ids = $request->input('ids');
+
+            $blogs = $this->blogManagementService->deleteBlogs($ids);
+
+            return response()->json([
+                'data' => $blogs,
+                'status' => self::STATUS_SUCCESS,
+                'msg' => 'success',
+            ]);
+
         } catch (ValidationException $e) {
             return $this->clientErrorResponse('Invalid request: ' . json_encode($e->errors()), \Symfony\Component\HttpFoundation\Response::HTTP_BAD_REQUEST);
         } catch (Exception $e) {
