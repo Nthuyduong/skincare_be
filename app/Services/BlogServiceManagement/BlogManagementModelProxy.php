@@ -89,7 +89,6 @@ class BlogManagementModelProxy
     function createBlog($data)
     {
         return DB::transaction(function () use ($data){
-            Log::info($data);
             // tạo mới blog
             $blog = new Blog();
             $blog->title = $data['title'];
@@ -143,7 +142,7 @@ class BlogManagementModelProxy
     {
         return Blog::where('slug', $slug)
             ->with('detail')
-            ->with('categories')
+            ->with('categories.parent')
             ->first();
     }
 
