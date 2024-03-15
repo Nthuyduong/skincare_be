@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Jobs\SendMailNotication;
 use Illuminate\Console\Command;
 
 class TestSendMailNotication extends Command
@@ -11,7 +12,7 @@ class TestSendMailNotication extends Command
      *
      * @var string
      */
-    protected $signature = 'app:test-send-mail-notication';
+    protected $signature = 'test-send-mail-notication {--email=}';
 
     /**
      * The console command description.
@@ -25,6 +26,12 @@ class TestSendMailNotication extends Command
      */
     public function handle()
     {
-        //
+        $email = $this->option('email');
+        if (empty($email)) {
+            $this->error('Email is required');
+            return;
+        }
+        $job = new SendMailNotication($email, 'Test send mail notication', 'This is a test email notication');
+        dispatch($job);
     }
 }
