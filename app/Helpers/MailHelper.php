@@ -14,9 +14,11 @@ class MailHelper
         try {
             Mail::send(["html" => $info["template"]], $info, function ($message) use ($nameFrom, $mailReply, $nameReply, $attachments, $emailCc, $subject, $emailTo, $emailFrom) {
                 $message->from(trim($emailFrom), $nameFrom);
-                $message->to(trim($emailTo))
-                    ->replyTo(trim($mailReply), $nameReply)
-                    ->subject($subject);
+                $message->to(trim($emailTo));
+                if ($mailReply != '') {
+                    $message->replyTo(trim($mailReply), $nameReply);
+                }
+                $message->subject($subject);
                 if(count($emailCc) != 0 ){
                     foreach ($emailCc as $cc) {
                         if($cc != ''){
