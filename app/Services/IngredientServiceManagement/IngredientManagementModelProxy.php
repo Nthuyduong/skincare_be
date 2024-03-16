@@ -102,5 +102,10 @@ class IngredientManagementModelProxy
         $ingredient->delete();
         return $ingredient;
     }
+
+    function getAllWithoutPagination()
+    {
+        return Ingredient::all();
+    }
 }
 

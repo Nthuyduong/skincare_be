@@ -60,4 +60,9 @@ class IngredientManagementService
         }
         return $this->IngredientManagementModelProxy->deleteIngredient($id);
     }
+
+    function getAllWithoutPagination()
+    {
+        return $this->IngredientManagementModelProxy->getAllWithoutPagination();
+    }
 }

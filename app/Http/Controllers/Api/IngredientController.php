@@ -130,5 +130,16 @@ class IngredientController extends ApiController
             return $this->internalServerErrorResponse(__METHOD__, $e);
         }
     }
-
+    public function getAllWithoutPagination() {
+        try {
+            $ingredients = $this->ingredientManagementService->getAllWithoutPagination();
+            return response()->json([
+                'data' => $ingredients,
+                'status' => self::STATUS_SUCCESS,
+                'msg' => 'success',
+            ]);
+        } catch (Exception $e) {
+            return $this->internalServerErrorResponse(__METHOD__, $e);
+        }
+    }
 }

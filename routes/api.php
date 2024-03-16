@@ -68,8 +68,6 @@ Route::namespace("Api")->group(function() {
                 Route::get('/{id}', 'BlogController@getBlogById');
                 Route::post('/{id}', 'BlogController@updateBlog');
                 Route::delete('/{id}', 'BlogController@deleteBlog');
-        
-                
             });
             Route::group(['prefix' => 'ingredients'], function () {
                 Route::get('/', 'IngredientController@getAll');
@@ -97,6 +95,7 @@ Route::namespace("Api")->group(function() {
     });
 
     Route::group(['prefix' => 'ingredients'], function () {
+        Route::get('/getAll', 'IngredientController@getAllWithoutPagination');
         Route::get('/', 'IngredientController@getAll');
         Route::get('/{id}', 'IngredientController@getIngredientById');
     });
