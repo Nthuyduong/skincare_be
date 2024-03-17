@@ -13,17 +13,17 @@ class SearchManagementModelProxy
     {
         
         $queryBlog = Blog::query()
+            ->leftJoin('blog_details as detail', 'blogs.id', '=', 'detail.blog_id')
             ->where(function($q) use ($search) {
                 $q->where('title', 'like', '%' . $search . '%')
-                    ->orWhere('content', 'like', '%' . $search . '%')
-                    ->orWhere('summary', 'like', '%' . $search . '%');
+                    ->orWhere('summary', 'like', '%' . $search . '%')
+                    ->orWhere('detail.content', 'like', '%' . $search . '%');
             })
             ->select(
-                'id',
+                'blogs.id as id',
                 'title',
                 'featured_img',
                 'summary',
-                'content',
                 'publish_date',
                 DB::raw("'blogs' as table_name"),
             );
@@ -43,7 +43,6 @@ class SearchManagementModelProxy
                 'name as title',
                 'featured_img',
                 'description as summary',
-                'content',
                 'publish_date',
                 DB::raw("'ingredient' as table_name"),
             );
