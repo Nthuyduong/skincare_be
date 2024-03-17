@@ -69,7 +69,7 @@ class BlogManagementModelProxy
         $results = $query
             ->select(
                 'id', 'title', 'slug', 'status', 'publish_date', 'view_count', 'created_at', 'updated_at',
-                'meta_title', 'meta_description', 'featured_img', 'banner_img', 'author', 'summary', 'tag',
+                'meta_title', 'meta_description', 'featured_img', 'banner_img', 'author', 'summary', 'tag', 'estimate_time'
             )
             ->skip(($page - 1) * $limit)
             ->take($limit)
@@ -105,6 +105,7 @@ class BlogManagementModelProxy
             $blog->meta_title = $data['meta_title'];
             $blog->meta_description = $data['meta_description'];
             $blog->excerpt = $data['excerpt'];
+            $blog->estimate_time = $data['estimate_time'];
             $blog->save();
 
             // tạo mới blog detail
@@ -164,7 +165,7 @@ class BlogManagementModelProxy
             $blog->tag = $data['tag'] ?? $blog->tag;
             $blog->status = $data['status'] ?? $blog->status;
             $blog->excerpt = $data['excerpt'] ?? $blog->excerpt;
-
+            $blog->estimate_time = $data['estimate_time'] ?? $blog->estimate_time;
     
             if (isset($data['content'])) {
                 $blog->detail->content_draft = $data['content'];
@@ -190,9 +191,15 @@ class BlogManagementModelProxy
             $blog->publish_date = new DateTime();
 
             $blog->detail->content = $blog->detail->content_draft;
+            $newContent = $blog->detail->content;
+            $dom = new \DOMDocument();
+            $dom->loadHTML($newContent);
+            $countChar = str_word_count($dom->textContent);
+            $blog->estimate_time = ceil($countChar / 238);
             $blog->detail->save();
 
             $blog->save();
+
             return $blog;
         });
         

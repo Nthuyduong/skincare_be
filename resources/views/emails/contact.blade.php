@@ -1,1 +1,1 @@
-{!! nl2br($content) !!}
+{!! $content !!}

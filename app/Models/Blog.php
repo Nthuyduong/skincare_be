@@ -28,6 +28,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string $updated_at
  * @property string $deleted_at
  * @property string $excerpt
+ * @property string $estimate_time
  */
 class Blog extends Model
 {

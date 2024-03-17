@@ -82,7 +82,7 @@ Route::namespace("Api")->group(function() {
         Route::get('/newest', 'BlogController@getNewest');
         Route::get('/popular', 'BlogController@getPopular');
         Route::get('/slug/{slug}', 'BlogController@getBlogBySlug');
-        Route::post('/update/view-count', 'BlogController@updateViewCount');
+        Route::post('/update/view-count/{id}', 'BlogController@updateViewCount');
         Route::post('/update/share-count', 'BlogController@updateShareCount');
         Route::get('/', 'BlogController@getAll');
         Route::get('/{id}', 'BlogController@getBlogById');

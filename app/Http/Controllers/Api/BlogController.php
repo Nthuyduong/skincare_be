@@ -83,6 +83,7 @@ class BlogController extends ApiController
             $data['meta_title'] = $request->input('meta_title');
             $data['meta_description'] = $request->input('meta_description');
             $data['excerpt'] = $request->input('excerpt');
+            $data['estimate_time'] = $request->input('estimate_time');
 
             $blog = $this->blogManagementService->createBlog($data);
 
@@ -157,6 +158,7 @@ class BlogController extends ApiController
             $data['tag'] = $request->input('tag');
             $data['status'] = $request->input('status');
             $data['excerpt'] = $request->input('excerpt');
+            $data['estimate_time'] = $request->input('estimate_time');
 
             $blogs = $this->blogManagementService->updateBlog($id, $data);
 
