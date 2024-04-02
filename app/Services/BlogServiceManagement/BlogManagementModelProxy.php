@@ -193,8 +193,11 @@ class BlogManagementModelProxy
             $blog->detail->content = $blog->detail->content_draft;
             $newContent = $blog->detail->content;
             $dom = new \DOMDocument();
+            libxml_use_internal_errors(true);
             $dom->loadHTML($newContent);
+            libxml_clear_errors();
             $countChar = str_word_count($dom->textContent);
+            Log::info($countChar);
             $blog->estimate_time = ceil($countChar / 238);
             $blog->detail->save();
 
