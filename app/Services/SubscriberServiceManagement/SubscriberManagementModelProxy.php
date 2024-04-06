@@ -57,5 +57,9 @@ class SubscriberManagementModelProxy
     function getAll() {
         return Subscribes::all();
     }
+
+    function getSubscribeByEmail($email) {
+        return Subscribes::where('email', $email)->first();
+    }
 }
 

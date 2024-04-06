@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Exceptions\ExceptionMessage;
 use App\Http\Controllers\ApiController;
 use App\Services\SubscriberServiceManagement\SubscriberManagementService;
 
@@ -41,6 +42,8 @@ class SubscriberController extends ApiController
 
         } catch (ValidationException $e) {
             return $this->validationErrorResponse(__METHOD__, $e);
+        } catch(ExceptionMessage $e) {
+            return $this->clientErrorResponse($e->getMessage(), 500);
         } catch (Exception $e) {
             return $this->internalServerErrorResponse(__METHOD__, $e);
         }

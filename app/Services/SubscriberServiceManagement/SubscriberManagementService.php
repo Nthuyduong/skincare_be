@@ -1,7 +1,8 @@
 <?php
 
 namespace App\Services\SubscriberServiceManagement;
-
+use App\Jobs\SendMailJob;
+use App\Exceptions\ExceptionMessage;
 class SubscriberManagementService
 {
     protected $subscriberManagementProxy;
@@ -13,7 +14,14 @@ class SubscriberManagementService
 
     public function subscribe($data)
     {
-        return $this->subscriberManagementProxy->createSubscribe($data);
+        $check = $this->subscriberManagementProxy->getSubscribeByEmail($data['email']);
+        if ($check) {
+            throw new ExceptionMessage('Email already subscribed');
+        }
+        $sub = $this->subscriberManagementProxy->createSubscribe($data);
+        $job = new SendMailJob($sub->email, 'Subscribe', 'Thank you for subscribing');
+        dispatch($job);
+        return $sub;
     }
 
     public function getSubscribe($id)
