@@ -4,6 +4,7 @@ namespace App\Services\BlogServiceManagement;
 
 use App\Exceptions\SlugExistException;
 use App\Helpers\ImageHelper;
+use App\Jobs\SendMailNotication;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\File;
 
@@ -77,7 +78,16 @@ class BlogManagementService
 
     function publishBlog($id)
     {
-        return $this->blogManagementModelProxy->publishBlog($id);
+        $blog = $this->blogManagementModelProxy->publishBlog($id);
+
+        if (!empty($blog)) {
+            if (empty($blog['old_publish_date'])) {
+                $job = new SendMailNotication($blog['id']);
+                dispatch($job);
+            }
+        }
+
+        return $blog;
     }
 
     function updateStatusBlogs($ids, $status)

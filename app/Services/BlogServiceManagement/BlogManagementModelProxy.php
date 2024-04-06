@@ -184,6 +184,7 @@ class BlogManagementModelProxy
     {
         return DB::transaction(function() use ($id){
             $blog = $this->getBlogById($id);
+            $oldPublishDate = $blog->publish_date;
             if (!$blog) {
                 return null;
             }
@@ -197,13 +198,17 @@ class BlogManagementModelProxy
             $dom->loadHTML($newContent);
             libxml_clear_errors();
             $countChar = str_word_count($dom->textContent);
-            Log::info($countChar);
             $blog->estimate_time = ceil($countChar / 238);
             $blog->detail->save();
 
             $blog->save();
 
-            return $blog;
+            return [
+                'id' => $blog->id,
+                'status' => $blog->status,
+                'publish_date' => $blog->publish_date,
+                'old_publish_date' => $oldPublishDate ?? '',
+            ];
         });
         
     }

@@ -76,6 +76,17 @@ Route::namespace("Api")->group(function() {
                 Route::post('/{id}', 'IngredientController@updateIngredient');
                 Route::delete('/{id}', 'IngredientController@deleteIngredient');
             });
+
+            Route::group(['prefix' => 'contacts'], function () {
+                Route::get('/', 'ContactController@getAll');
+                Route::get('/{id}', 'ContactController@getContactById');
+                Route::delete('/{id}', 'ContactController@deleteContact');
+            });
+            Route::group(['prefix' => 'subscribes'], function () {
+                Route::get('/', 'SubscriberController@getAll');
+                Route::get('/{id}', 'Subscriberontroller@getSubscribeById');
+                Route::delete('/{id}', 'SubscriberController@delete');
+            });
         });
     });
     Route::group(['prefix' => 'blogs'], function () {
@@ -100,4 +111,7 @@ Route::namespace("Api")->group(function() {
         Route::get('/{id}', 'IngredientController@getIngredientById');
     });
     Route::get('/search', 'SearchController@search');
+
+    Route::post('/contact', 'ContactController@createContact');
+    Route::post('/subscribes', 'SubscriberController@subscribe');
 });

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
- * Class Contacts
+ * Class Contact
  * @package App\Models
  * @property int $id
  * @property string $name
@@ -18,7 +18,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string $updated_at
  * @property string $deleted_at
  */
-class Contacts extends Model
+class Contact extends Model
 {
 
     use HasFactory;
