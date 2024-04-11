@@ -87,6 +87,11 @@ Route::namespace("Api")->group(function() {
                 Route::get('/{id}', 'Subscriberontroller@getSubscribeById');
                 Route::delete('/{id}', 'SubscriberController@delete');
             });
+
+            Route::group(['prefix' => 'settings'], function () {
+                Route::get('/mail/{type}', 'SettingController@getSettingMail');
+                Route::post('/mail/{type}', 'SettingController@updateSettingMail');
+            });
         });
     });
     Route::group(['prefix' => 'blogs'], function () {
