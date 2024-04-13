@@ -17,7 +17,8 @@ class SearchManagementModelProxy
             ->where(function($q) use ($search) {
                 $q->where('title', 'like', '%' . $search . '%')
                     ->orWhere('summary', 'like', '%' . $search . '%')
-                    ->orWhere('detail.content', 'like', '%' . $search . '%');
+                    ->orWhere('detail.content', 'like', '%' . $search . '%')
+                    ->orWhere('suggest', 'like', '%' . $search . '%');
             })
             ->select(
                 'blogs.id as id',
@@ -32,7 +33,8 @@ class SearchManagementModelProxy
 
         $queryIngredient = Ingredient::query()
             ->where(function($q) use ($search) {
-                $q->where('name', 'like', '%' . $search . '%');
+                $q->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('suggest', 'like', '%' . $search . '%');
             })
             ->select(
                 'id',
