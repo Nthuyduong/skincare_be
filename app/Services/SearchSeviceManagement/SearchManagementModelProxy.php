@@ -47,8 +47,8 @@ class SearchManagementModelProxy
                 DB::raw("'ingredient' as table_name"),
             );
 
-        $combine = $queryBlog
-            ->unionAll($queryIngredient);
+        $combine = $queryIngredient
+            ->unionAll($queryBlog);
         $count = $combine->count();
         $results = $combine->skip(($page - 1) * $limit)
             ->take($limit)
