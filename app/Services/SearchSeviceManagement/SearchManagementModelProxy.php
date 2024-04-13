@@ -26,8 +26,7 @@ class SearchManagementModelProxy
                 'featured_img',
                 'summary',
                 'publish_date',
-                'blogs.slug as slug',
-                'suggest',
+                'slug',
                 DB::raw("'blogs' as table_name"),
             );
 
@@ -42,8 +41,7 @@ class SearchManagementModelProxy
                 'featured_img',
                 'description as summary',
                 'publish_date',
-                'suggest',
-                DB::raw("'' as slug"),
+                DB::raw("'slug' as slug"),
                 DB::raw("'ingredient' as table_name"),
             );
 
