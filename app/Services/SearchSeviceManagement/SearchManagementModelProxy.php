@@ -30,13 +30,7 @@ class SearchManagementModelProxy
 
         $queryIngredient = Ingredient::query()
             ->where(function($q) use ($search) {
-                $q->where('name', 'like', '%' . $search . '%')
-                    ->orWhere('description', 'like', '%' . $search . '%')
-                    ->orWhere('content', 'like', '%' . $search . '%')
-                    ->orWhereHas('details', function($qChild) use($search) {
-                        $qChild->where('name', 'like', '%' . $search . '%')
-                            ->orWhere('content', 'like', '%' . $search . '%');
-                    });
+                $q->where('name', 'like', '%' . $search . '%');
             })
             ->select(
                 'id',
