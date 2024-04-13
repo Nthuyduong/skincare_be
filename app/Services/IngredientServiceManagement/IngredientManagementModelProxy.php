@@ -47,6 +47,7 @@ class IngredientManagementModelProxy
         $ingredient->description = $data['description'];
         $ingredient->featured_img = $data['featured_img'];
         $ingredient->content = $data['content'];
+        $ingredient->suggest = $data['suggest'];
         $ingredient->save();
 
         if (isset($data['details'])) {
@@ -80,6 +81,7 @@ class IngredientManagementModelProxy
         $ingredient->description = $data['description'] ?? $ingredient->description;
         $ingredient->featured_img = $data['featured_img'] ?? $ingredient->featured_img;
         $ingredient->content = $data['content'] ?? $ingredient->content;
+        $ingredient->suggest = $data['suggest'] ?? $ingredient->suggest;
        
         if (isset($data['details'])) {
             $ingredient->details()->forceDelete();

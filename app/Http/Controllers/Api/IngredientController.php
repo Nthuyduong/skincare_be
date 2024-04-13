@@ -58,6 +58,7 @@ class IngredientController extends ApiController
             $data['description'] = $request->input('descripion');
             $data['featured_img'] = $request->file('featured_img');
             $data['content'] = $request->input('content');
+            $data['suggest'] = $request->input('suggest');
             // details is an array of objects json
             $data['details'] = json_decode($request->input('details'), true);
 
@@ -83,6 +84,7 @@ class IngredientController extends ApiController
             $data['description'] = $request->input('descripion');
             $data['featured_img'] = $request->file('featured_img');
             $data['content'] = $request->input('content');
+            $data['suggest'] = $request->input('suggest');
             $data['details'] = json_decode($request->input('details'), true);
 
             $ingredients = $this->ingredientManagementService->updateIngredient($id, $data);

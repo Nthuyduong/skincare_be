@@ -15,6 +15,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string $content
  * @property string $featured_img
  * @property int $status
+ * @property string $publish_date
+ * @property string $suggest
  */
 class Ingredient extends Model
 {

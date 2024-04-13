@@ -106,6 +106,7 @@ class BlogManagementModelProxy
             $blog->meta_description = $data['meta_description'];
             $blog->excerpt = $data['excerpt'];
             $blog->estimate_time = $data['estimate_time'];
+            $blog->suggest = $data['suggest'];
             $blog->save();
 
             // tạo mới blog detail
@@ -166,6 +167,7 @@ class BlogManagementModelProxy
             $blog->status = $data['status'] ?? $blog->status;
             $blog->excerpt = $data['excerpt'] ?? $blog->excerpt;
             $blog->estimate_time = $data['estimate_time'] ?? $blog->estimate_time;
+            $blog->suggest = $data['suggest'] ?? $blog->suggest;
     
             if (isset($data['content'])) {
                 $blog->detail->content_draft = $data['content'];
