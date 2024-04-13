@@ -97,6 +97,8 @@ Route::namespace("Api")->group(function() {
     Route::group(['prefix' => 'blogs'], function () {
         Route::get('/newest', 'BlogController@getNewest');
         Route::get('/popular', 'BlogController@getPopular');
+        Route::get('/related/{id}', 'BlogController@getRelatedBlogs');
+        Route::get('/category/{id}', 'BlogController@getBlogsByCategory');
         Route::get('/slug/{slug}', 'BlogController@getBlogBySlug');
         Route::post('/update/view-count/{id}', 'BlogController@updateViewCount');
         Route::post('/update/share-count', 'BlogController@updateShareCount');

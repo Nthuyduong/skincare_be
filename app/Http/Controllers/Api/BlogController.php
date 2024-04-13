@@ -317,4 +317,30 @@ class BlogController extends ApiController
             return $this->internalServerErrorResponse(__METHOD__, $e);
         }
     }
+
+    public function getRelatedBlogs(string $id) {
+        try {
+            $blogs = $this->blogManagementService->getRelatedBlogs($id);
+            return response()->json([
+                'data' => $blogs,
+                'status' => self::STATUS_SUCCESS,
+                'msg' => 'success',
+            ]);
+        } catch (Exception $e) {
+            return $this->internalServerErrorResponse(__METHOD__, $e);
+        }
+    }
+
+    public function getBlogsByCategory(string $id) {
+        try {
+            $blogs = $this->blogManagementService->getBlogsByCategoryId($id);
+            return response()->json([
+                'data' => $blogs,
+                'status' => self::STATUS_SUCCESS,
+                'msg' => 'success',
+            ]);
+        } catch (Exception $e) {
+            return $this->internalServerErrorResponse(__METHOD__, $e);
+        }
+    }
 }

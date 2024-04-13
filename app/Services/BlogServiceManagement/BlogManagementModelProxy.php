@@ -18,8 +18,7 @@ class BlogManagementModelProxy
     {
         $query = Blog::query();
 
-        // select * from blogs
-        $count = $query->count();
+        
 
         $query = $query
             ->with('categories');
@@ -64,7 +63,8 @@ class BlogManagementModelProxy
                 $query = $query->orderBy($sortArr[0], $sortArr[1]);
             }
         }
-
+        // select * from blogs
+        $count = $query->count();
         // select * from blogs limit ($limit) offset (($page - 1) * $limit)
         $results = $query
             ->select(
@@ -281,5 +281,52 @@ class BlogManagementModelProxy
                 'meta_title', 'meta_description', 'featured_img', 'banner_img', 'author', 'summary', 'tag',
             )
             ->limit($data['limit'])->get();
+    }
+
+    function getRelatedBlogs($id) {
+        $blog = $this->getBlogById($id);
+        if (!$blog) {
+            return [];
+        }
+        $categories = $blog->categories->pluck('id');
+        return Blog::with('categories')
+            ->where(function($q) use ($blog, $categories) {
+                $q->whereHas('categories', function ($q) use ($categories) {
+                    $q->whereIn('category_id', $categories);
+                })
+                ->orWhere('tag', 'like', '%' . $blog->tag . '%');
+            })
+            ->where('id', '!=', $id)
+            ->select(
+                'id', 'title', 'slug', 'status', 'publish_date', 'view_count', 'created_at', 'updated_at',
+                'meta_title', 'meta_description', 'featured_img', 'banner_img', 'author', 'summary', 'tag',
+            )
+            ->limit(5)->get();
+    }
+
+    function getBlogsByCategoryId($id, $page = 1, $limit = 10) {
+
+        $query = Blog::with('categories')
+            ->whereHas('categories', function ($q) use ($id) {
+                $q->where('category_id', $id);
+            })
+            ->select(
+                'id', 'title', 'slug', 'status', 'publish_date', 'view_count', 'created_at', 'updated_at',
+                'meta_title', 'meta_description', 'featured_img', 'banner_img', 'author', 'summary', 'tag',
+            );
+        $count = $query->count();
+        $results = $query
+            ->skip(($page - 1) * $limit)
+            ->take($limit)
+            ->get();
+        return [
+            'results' => $results,
+            'paginate' => [
+                'current' => $page,
+                'limit' => $limit,
+                'last' => ceil($count / $limit),
+                'count' => $count,
+            ]
+        ];
     }
 }

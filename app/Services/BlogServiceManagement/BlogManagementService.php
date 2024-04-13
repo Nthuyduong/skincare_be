@@ -122,4 +122,12 @@ class BlogManagementService
     function getPopular($data) {
         return $this->blogManagementModelProxy->getPopular($data);
     }
+
+    function getRelatedBlogs($id) {
+        return $this->blogManagementModelProxy->getRelatedBlogs($id);
+    }
+
+    function getBlogsByCategoryId($id) {
+        return $this->blogManagementModelProxy->getBlogsByCategoryId($id);
+    }
 }
