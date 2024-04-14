@@ -289,19 +289,35 @@ class BlogManagementModelProxy
             return [];
         }
         $categories = $blog->categories->pluck('id');
-        return Blog::with('categories')
+        $blogs = Blog::with('categories')
             ->where(function($q) use ($blog, $categories) {
                 $q->whereHas('categories', function ($q) use ($categories) {
                     $q->whereIn('category_id', $categories);
-                })
-                ->orWhere('tag', 'like', '%' . $blog->tag . '%');
+                });
+                $tags = explode(',', $blog->tag);
+                foreach ($tags as $tag) {
+                    $q->orWhere('tag', 'like', '%' . $tag . '%');
+                }
             })
             ->where('id', '!=', $id)
             ->select(
                 'id', 'title', 'slug', 'status', 'publish_date', 'view_count', 'created_at', 'updated_at',
                 'meta_title', 'meta_description', 'featured_img', 'banner_img', 'author', 'summary', 'tag',
             )
-            ->limit(5)->get();
+            ->limit(6)->get();
+        if ($blogs->count() < 6) {
+            $ids = $blogs->pluck('id');
+            $newBlogs = Blog::with('categories')
+                ->where('id', '!=', $id)
+                ->whereNotIn('id', $ids)
+                ->select(
+                    'id', 'title', 'slug', 'status', 'publish_date', 'view_count', 'created_at', 'updated_at',
+                    'meta_title', 'meta_description', 'featured_img', 'banner_img', 'author', 'summary', 'tag',
+                )
+                ->limit(6 - $blogs->count())->get();
+            $blogs = $blogs->merge($newBlogs);
+        }
+        return $blogs;
     }
 
     function getBlogsByCategoryId($id, $page = 1, $limit = 10) {
