@@ -261,7 +261,7 @@ class BlogManagementModelProxy
         return Blog::with('categories')
             ->select(
                 'id', 'title', 'slug', 'status', 'publish_date', 'view_count', 'created_at', 'updated_at',
-                'meta_title', 'meta_description', 'featured_img', 'banner_img', 'author', 'summary', 'tag',
+                'meta_title', 'meta_description', 'featured_img', 'banner_img', 'author', 'summary', 'tag', 'estimate_time'
             )
             ->orderBy('publish_date', 'desc')
             ->limit($data['limit'])->get();
@@ -278,7 +278,7 @@ class BlogManagementModelProxy
         return $query
             ->select(
                 'id', 'title', 'slug', 'status', 'publish_date', 'view_count', 'created_at', 'updated_at',
-                'meta_title', 'meta_description', 'featured_img', 'banner_img', 'author', 'summary', 'tag',
+                'meta_title', 'meta_description', 'featured_img', 'banner_img', 'author', 'summary', 'tag', 'estimate_time'
             )
             ->limit($data['limit'])->get();
     }
@@ -302,7 +302,7 @@ class BlogManagementModelProxy
             ->where('id', '!=', $id)
             ->select(
                 'id', 'title', 'slug', 'status', 'publish_date', 'view_count', 'created_at', 'updated_at',
-                'meta_title', 'meta_description', 'featured_img', 'banner_img', 'author', 'summary', 'tag',
+                'meta_title', 'meta_description', 'featured_img', 'banner_img', 'author', 'summary', 'tag', 'estimate_time'
             )
             ->limit(6)->get();
         if ($blogs->count() < 6) {
@@ -320,7 +320,7 @@ class BlogManagementModelProxy
         return $blogs;
     }
 
-    function getBlogsByCategoryId($id, $page = 1, $limit = 10) {
+    function getBlogsByCategoryId($id, $page = 1, $limit = 10, $filter = []) {
 
         $query = Blog::with('categories')
             ->whereHas('categories', function ($q) use ($id) {
@@ -328,9 +328,16 @@ class BlogManagementModelProxy
             })
             ->select(
                 'id', 'title', 'slug', 'status', 'publish_date', 'view_count', 'created_at', 'updated_at',
-                'meta_title', 'meta_description', 'featured_img', 'banner_img', 'author', 'summary', 'tag',
+                'meta_title', 'meta_description', 'featured_img', 'banner_img', 'author', 'summary', 'tag', 'estimate_time'
             );
         $count = $query->count();
+        if (isset($filter['sort'])) {
+            $sort = $filter['sort'];
+            $sortArr = explode(':', $sort);
+            if (count($sortArr) == 2) {
+                $query = $query->orderBy($sortArr[0], $sortArr[1]);
+            }
+        }
         $results = $query
             ->skip(($page - 1) * $limit)
             ->take($limit)

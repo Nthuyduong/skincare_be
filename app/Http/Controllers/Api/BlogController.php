@@ -331,9 +331,20 @@ class BlogController extends ApiController
         }
     }
 
-    public function getBlogsByCategory(string $id) {
+    public function getBlogsByCategory(string $id, Request $request) {
         try {
-            $blogs = $this->blogManagementService->getBlogsByCategoryId($id);
+            $page = $request->input('page', 1);
+            if ($page < 1) {
+                $page = 1;
+            }
+            $limit = $request->input('limit', 10);
+            if ($limit < 1) {
+                $limit = 10;
+            }
+            $filter = [];
+            $sort = $request->input('sort');
+            $filter['sort'] = $sort; // ['publish_date:desc', 'view_count:asc', 'share_count:desc
+            $blogs = $this->blogManagementService->getBlogsByCategoryId($id, $limit, $page, $filter);
             return response()->json([
                 'data' => $blogs,
                 'status' => self::STATUS_SUCCESS,

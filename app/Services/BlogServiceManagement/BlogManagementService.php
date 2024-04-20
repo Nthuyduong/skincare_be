@@ -127,7 +127,7 @@ class BlogManagementService
         return $this->blogManagementModelProxy->getRelatedBlogs($id);
     }
 
-    function getBlogsByCategoryId($id) {
-        return $this->blogManagementModelProxy->getBlogsByCategoryId($id);
+    function getBlogsByCategoryId($id, $page = 1, $limit = 10, $filter = []) {
+        return $this->blogManagementModelProxy->getBlogsByCategoryId($id, $page, $limit, $filter);
     }
 }
