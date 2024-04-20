@@ -344,7 +344,7 @@ class BlogController extends ApiController
             $filter = [];
             $sort = $request->input('sort');
             $filter['sort'] = $sort; // ['publish_date:desc', 'view_count:asc', 'share_count:desc
-            $blogs = $this->blogManagementService->getBlogsByCategoryId($id, $limit, $page, $filter);
+            $blogs = $this->blogManagementService->getBlogsByCategoryId($id, $page, $limit, $filter);
             return response()->json([
                 'data' => $blogs,
                 'status' => self::STATUS_SUCCESS,
