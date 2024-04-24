@@ -38,7 +38,10 @@ class SettingManagementService
             dispatch($job);
         } elseif ($type == MailSetting::TYPE_NOTIFICATION) {
             $setting = $this->modelProxy->getSetting(MailSetting::TYPE_NOTIFICATION);
-            $blog = Blog::whereNotNull('publish_date')->orderBy('publish_date', 'desc')->first();
+            $blog = Blog::whereNotNull('publish_date')
+                ->with('categories')
+                ->orderBy('publish_date', 'desc')
+                ->first();
             $content = $setting->content;
 
             $content = str_replace('[[title]]', $blog->title, $content);
@@ -46,6 +49,13 @@ class SettingManagementService
             $content = str_replace('[[link]]', config('app.fe_url') . "/article/" . $blog->slug, $content);
             $content = str_replace('[[image]]', config('app.url') . "/storage/desktop/" . $blog->featured_img, $content);
             $content = str_replace('[[banner]]', config('app.url') . "/storage/desktop/" . $blog->banner_img, $content);
+            $publishDate = date('d/m/Y', strtotime($blog->publish_date));
+            $content = str_replace('[[date]]', $publishDate, $content);
+            $content = str_replace('[[author]]', $blog->author, $content);
+            $content = str_replace('[[estimateTime]]', $blog->estimate_time, $content);
+            $categoriesName = $blog->categories->pluck('name')->toArray();
+            $content = str_replace('[[category]]', implode(', ', $categoriesName), $content);
+            $content = str_replace('[[excerpt]]', $blog->excerpt, $content);
 
             $job = new SendMailJob($email, $setting->title, $content);
             dispatch($job);
