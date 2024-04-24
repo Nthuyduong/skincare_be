@@ -2,6 +2,7 @@
 
 namespace App\Services\IngredientServiceManagement;
 
+use App\Exceptions\ExceptionMessage;
 use App\Exceptions\SlugExistException;
 use App\Helpers\ImageHelper;
 use Illuminate\Support\Facades\Log;
@@ -24,9 +25,17 @@ class IngredientManagementService
 
     function createIngredient($data)
     {
+        $check = $this->IngredientManagementModelProxy->checkByNames($data['name']);
+        if ($check) {
+            throw new ExceptionMessage('Ingredient name already exist');
+        }
         if (isset($data['featured_img'])) {
             $featured_img = ImageHelper::resizeImage($data['featured_img']);
             $data['featured_img'] = $featured_img['original'];
+        }
+        if (isset($data['featured_img2'])) {
+            $featured_img2 = ImageHelper::resizeImage($data['featured_img2']);
+            $data['featured_img2'] = $featured_img2['original'];
         }
         return $this->IngredientManagementModelProxy->createIngredient($data);
     }
@@ -37,6 +46,10 @@ class IngredientManagementService
         if (isset($data['featured_img'])) {
             $featured_img = ImageHelper::resizeImage($data['featured_img']);
             $data['featured_img'] = $featured_img['original'];
+        }
+        if (isset($data['featured_img2'])) {
+            $featured_img2 = ImageHelper::resizeImage($data['featured_img2']);
+            $data['featured_img2'] = $featured_img2['original'];
         }
         $updated = $this->IngredientManagementModelProxy->updateIngredient($id, $data);
 

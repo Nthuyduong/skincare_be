@@ -44,4 +44,17 @@ class SettingController extends ApiController
             return $this->internalServerErrorResponse(__METHOD__, $e);
         }
     }
+    public function testSettingMail($type, Request $request)
+    {
+        try {
+            $email = $request->input('email');
+            $this->settingManagementService->testSettingMail($type, $email);
+            return response()->json([
+                'status' => 'success',
+                'data' => 'success'
+            ]);
+        } catch (\Exception $e) {
+            return $this->internalServerErrorResponse(__METHOD__, $e);
+        }
+    }
 }

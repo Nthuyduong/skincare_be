@@ -91,6 +91,7 @@ Route::namespace("Api")->group(function() {
             Route::group(['prefix' => 'settings'], function () {
                 Route::get('/mail/{type}', 'SettingController@getSettingMail');
                 Route::post('/mail/{type}', 'SettingController@updateSettingMail');
+                Route::post('/mail/test/{type}', 'SettingController@testSettingMail');
             });
         });
     });

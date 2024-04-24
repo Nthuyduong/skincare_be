@@ -40,12 +40,18 @@ class IngredientManagementModelProxy
         ];
     }
 
+    function checkByNames($names)
+    {
+        return Ingredient::where('name', $names)->first();
+    }
+
     function createIngredient($data)
     {
         $ingredient = new Ingredient();
         $ingredient->name = $data['name'];
         $ingredient->description = $data['description'];
         $ingredient->featured_img = $data['featured_img'];
+        $ingredient->featured_img2 = $data['featured_img2'];
         $ingredient->content = $data['content'];
         $ingredient->suggest = $data['suggest'];
         $ingredient->save();
@@ -80,6 +86,7 @@ class IngredientManagementModelProxy
         $ingredient->name = $data['name'] ?? $ingredient->name;
         $ingredient->description = $data['description'] ?? $ingredient->description;
         $ingredient->featured_img = $data['featured_img'] ?? $ingredient->featured_img;
+        $ingredient->featured_img2 = $data['featured_img2'] ?? $ingredient->featured_img2;
         $ingredient->content = $data['content'] ?? $ingredient->content;
         $ingredient->suggest = $data['suggest'] ?? $ingredient->suggest;
        

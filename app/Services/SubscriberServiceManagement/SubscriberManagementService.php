@@ -3,13 +3,18 @@
 namespace App\Services\SubscriberServiceManagement;
 use App\Jobs\SendMailJob;
 use App\Exceptions\ExceptionMessage;
+use App\Models\MailSetting;
+use App\Services\SettingServiceManagement\SettingManagementModelProxy;
+
 class SubscriberManagementService
 {
     protected $subscriberManagementProxy;
+    protected $settingManagementProxy;
 
-    public function __construct(SubscriberManagementModelProxy $subscriberManagementProxy)
+    public function __construct(SubscriberManagementModelProxy $subscriberManagementProxy, SettingManagementModelProxy $settingManagementProxy)
     {
         $this->subscriberManagementProxy = $subscriberManagementProxy;
+        $this->settingManagementProxy = $settingManagementProxy;
     }
 
     public function subscribe($data)
@@ -19,7 +24,9 @@ class SubscriberManagementService
             throw new ExceptionMessage('Email already subscribed');
         }
         $sub = $this->subscriberManagementProxy->createSubscribe($data);
-        $job = new SendMailJob($sub->email, 'Subscribe', 'Thank you for subscribing');
+        $setting = $this->settingManagementProxy->getSetting(MailSetting::TYPE_SUBSCRIBE);
+        
+        $job = new SendMailJob($sub->email, $setting->title, $setting->content);
         dispatch($job);
         return $sub;
     }

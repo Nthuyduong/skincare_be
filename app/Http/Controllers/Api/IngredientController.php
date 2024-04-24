@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Exceptions\ExceptionMessage;
 use App\Http\Controllers\ApiController;
 use App\Models\Category;
 use App\Services\IngredientServiceManagement\IngredientManagementService;
@@ -57,6 +58,7 @@ class IngredientController extends ApiController
             $data['name'] = $request->input('name');
             $data['description'] = $request->input('descripion');
             $data['featured_img'] = $request->file('featured_img');
+            $data['featured_img2'] = $request->file('featured_img2');
             $data['content'] = $request->input('content');
             $data['suggest'] = $request->input('suggest');
             // details is an array of objects json
@@ -71,6 +73,8 @@ class IngredientController extends ApiController
             ]);
         } catch (ValidationException $e) {
             return $this->clientErrorResponse('Invalid request: ' . json_encode($e->errors()), \Symfony\Component\HttpFoundation\Response::HTTP_BAD_REQUEST);
+        }  catch(ExceptionMessage $e) {
+            return $this->clientErrorResponse($e->getMessage(), 500);
         } catch (Exception $e) {
             return $this->internalServerErrorResponse(__METHOD__, $e);
         }
@@ -83,6 +87,7 @@ class IngredientController extends ApiController
             $data['name'] = $request->input('name');
             $data['description'] = $request->input('descripion');
             $data['featured_img'] = $request->file('featured_img');
+            $data['featured_img2'] = $request->file('featured_img2');
             $data['content'] = $request->input('content');
             $data['suggest'] = $request->input('suggest');
             $data['details'] = json_decode($request->input('details'), true);
