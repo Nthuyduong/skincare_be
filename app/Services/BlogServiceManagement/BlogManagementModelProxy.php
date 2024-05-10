@@ -342,7 +342,6 @@ class BlogManagementModelProxy
             ->skip(($page - 1) * $limit)
             ->take($limit)
             ->get();
-        Log::info($results);
         return [
             'results' => $results,
             'paginate' => [
