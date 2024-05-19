@@ -31,6 +31,7 @@ class SubscriberController extends ApiController
             $data = [];
 
             $data['email'] = $request->input('email');
+            $data['name'] = $request->input('name');
 
             $subscriber = $this->subscriberManagementService->subscribe($data);
 

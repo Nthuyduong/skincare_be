@@ -10,6 +10,7 @@ class SubscriberManagementModelProxy
     {
         $subscribe = new Subscribes();
         $subscribe->email = $data['email'];
+        $subscribe->name = $data['name'];
         $subscribe->save();
         return $subscribe;
     }
