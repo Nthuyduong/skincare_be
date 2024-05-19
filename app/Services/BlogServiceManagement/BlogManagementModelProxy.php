@@ -360,7 +360,6 @@ class BlogManagementModelProxy
                 'id', 'title', 'slug', 'status', 'publish_date', 'view_count', 'created_at', 'updated_at',
                 'meta_title', 'meta_description', 'featured_img', 'banner_img', 'author', 'summary', 'tag', 'estimate_time'
             );
-        $count = $query->count();
         if (isset($filter['sort'])) {
             $sort = $filter['sort'];
             $sortArr = explode(':', $sort);
@@ -372,14 +371,6 @@ class BlogManagementModelProxy
             ->skip(($page - 1) * $limit)
             ->take($limit)
             ->get();
-        return [
-            'results' => $results,
-            'paginate' => [
-                'current' => $page,
-                'limit' => $limit,
-                'last' => ceil($count / $limit),
-                'count' => $count,
-            ]
-        ];
+        return $results;
     }
 }
