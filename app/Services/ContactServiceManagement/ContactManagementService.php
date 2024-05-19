@@ -2,7 +2,9 @@
 
 namespace App\Services\ContactServiceManagement;
 
+use App\Helpers\MailHelper;
 use App\Jobs\SendMailJob;
+use App\Jobs\SendMailPortfolioJob;
 use App\Models\MailSetting;
 use App\Services\SettingServiceManagement\SettingManagementModelProxy;
 
@@ -24,6 +26,12 @@ class ContactManagementService
         $job = new SendMailJob($contact->email, $setting->title, $setting->content);
         dispatch($job);
         return $contact;
+    }
+
+    public function createContactPortfolio($data) {
+        $setting = $this->settingManagementProxy->getSetting(MailSetting::TYPE_PORTFOLIO);
+        $job = new SendMailPortfolioJob($data['email'], $setting->title, $setting->content);
+        dispatch($job);
     }
 
     public function getContact($id)

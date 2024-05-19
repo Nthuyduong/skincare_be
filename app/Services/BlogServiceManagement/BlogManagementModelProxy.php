@@ -352,4 +352,34 @@ class BlogManagementModelProxy
             ]
         ];
     }
+
+    function getByTags($tag, $page = 1, $limit = 10, $filter = []) {
+        $query = Blog::with('categories')
+            ->where('tag', 'like', '%' . $tag . '%')
+            ->select(
+                'id', 'title', 'slug', 'status', 'publish_date', 'view_count', 'created_at', 'updated_at',
+                'meta_title', 'meta_description', 'featured_img', 'banner_img', 'author', 'summary', 'tag', 'estimate_time'
+            );
+        $count = $query->count();
+        if (isset($filter['sort'])) {
+            $sort = $filter['sort'];
+            $sortArr = explode(':', $sort);
+            if (count($sortArr) == 2) {
+                $query = $query->orderBy($sortArr[0], $sortArr[1]);
+            }
+        }
+        $results = $query
+            ->skip(($page - 1) * $limit)
+            ->take($limit)
+            ->get();
+        return [
+            'results' => $results,
+            'paginate' => [
+                'current' => $page,
+                'limit' => $limit,
+                'last' => ceil($count / $limit),
+                'count' => $count,
+            ]
+        ];
+    }
 }

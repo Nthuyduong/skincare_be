@@ -101,4 +101,34 @@ class ContactController extends ApiController
             return $this->internalServerErrorResponse(__METHOD__, $e);
         }
     }
+
+    public function createContactPortfolio(Request $request)
+    {
+        try {
+            $this->validate($request, [
+                'name' => 'required',
+                'email' => 'required',
+                'message' => 'required',
+            ]);
+
+            $data = [];
+
+            $data['name'] = $request->input('name');
+            $data['email'] = $request->input('email');
+            $data['message'] = $request->input('message');
+            
+            $contact = $this->contactService->createContactPortfolio($data);
+
+            return response()->json([
+                'data' => $contact,
+                'status' => self::STATUS_SUCCESS,
+                'msg' => 'success',
+            ]);
+
+        } catch (ValidationException $e) {
+            return $this->validationErrorResponse(__METHOD__, $e);
+        } catch (Exception $e) {
+            return $this->internalServerErrorResponse(__METHOD__, $e);
+        }
+    }
 }

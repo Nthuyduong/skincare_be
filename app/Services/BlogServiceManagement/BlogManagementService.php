@@ -130,4 +130,8 @@ class BlogManagementService
     function getBlogsByCategoryId($id, $page = 1, $limit = 10, $filter = []) {
         return $this->blogManagementModelProxy->getBlogsByCategoryId($id, $page, $limit, $filter);
     }
+
+    function getByTags($tags, $page = 1, $limit = 10, $filter = []) {
+        return $this->blogManagementModelProxy->getByTags($tags, $page, $limit, $filter);
+    }
 }

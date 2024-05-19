@@ -45,6 +45,16 @@ return [
             'timeout' => null,
             'local_domain' => env('MAIL_EHLO_DOMAIN'),
         ],
+        'portfolio' => [
+            'transport' => 'smtp',
+            'host' => env('MAIL_PORTFOLIO_HOST'),
+            'port' => env('MAIL_PORTFOLIO_PORT'),
+            'encryption' => env('MAIL_PORTFOLIO_ENCRYPTION'),
+            'username' => env('MAIL_PORTFOLIO_USERNAME'),
+            'password' => env('MAIL_PORTFOLIO_PASSWORD'),
+            'timeout' => null,
+            'local_domain' => env('MAIL_PORTFOLIO_EHLO_DOMAIN'),
+        ],
 
         'ses' => [
             'transport' => 'ses',
@@ -102,8 +112,9 @@ return [
     'from' => [
         'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
         'name' => env('MAIL_FROM_NAME', 'Example'),
+        'portfolio_address' => env('MAIL_PORTFOLIO_FROM_ADDRESS', 'hello@example.com'),
+        'portfolio_name' => env('MAIL_PORTFOLIO_FROM_NAME', 'Example'),
     ],
-
     /*
     |--------------------------------------------------------------------------
     | Markdown Mail Settings

@@ -96,6 +96,7 @@ Route::namespace("Api")->group(function() {
         });
     });
     Route::group(['prefix' => 'blogs'], function () {
+        Route::get('/tags', 'BlogController@getByTags');
         Route::get('/newest', 'BlogController@getNewest');
         Route::get('/popular', 'BlogController@getPopular');
         Route::get('/related/{id}', 'BlogController@getRelatedBlogs');
@@ -120,6 +121,7 @@ Route::namespace("Api")->group(function() {
     });
     Route::get('/search', 'SearchController@search');
 
+    Route::post('/contact/portfolio', 'ContactController@createContactPortfolio');
     Route::post('/contact', 'ContactController@createContact');
     Route::post('/subscribes', 'SubscriberController@subscribe');
 });
