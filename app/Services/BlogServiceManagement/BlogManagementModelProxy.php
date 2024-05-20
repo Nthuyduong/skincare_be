@@ -163,7 +163,9 @@ class BlogManagementModelProxy
             $blog->meta_title = $data['meta_title'] ?? $blog->meta_title;
             $blog->meta_description = $data['meta_description'] ?? $blog->meta_description;
             $blog->author = $data['author'] ?? $blog->author;
-            $blog->tag = $data['tag'] ?? $blog->tag;
+            if (isset($data['tag'])) {
+                $blog->tag = $data['tag'];
+            }
             $blog->status = $data['status'] ?? $blog->status;
             $blog->excerpt = $data['excerpt'] ?? $blog->excerpt;
             $blog->estimate_time = $data['estimate_time'] ?? $blog->estimate_time;

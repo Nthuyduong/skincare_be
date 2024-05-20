@@ -156,11 +156,13 @@ class BlogController extends ApiController
             $data['meta_title'] = $request->input('meta_title');
             $data['meta_description'] = $request->input('meta_description');
             $data['author'] = $request->input('author');
-            $data['tag'] = $request->input('tag');
             $data['status'] = $request->input('status');
             $data['excerpt'] = $request->input('excerpt');
             $data['estimate_time'] = $request->input('estimate_time');
             $data['suggest'] = $request->input('suggest');
+            if ($request->has('tag')) {
+                $data['tag'] = $request->input('tag');
+            }
 
             $blogs = $this->blogManagementService->updateBlog($id, $data);
 
