@@ -154,5 +154,14 @@ class CategoryManagementModelProxy
         }
         return null;
     }
+
+    function getCategoryBySlug($slug)
+    {
+        return Category::where('slug', $slug)
+            ->with('childrens')
+            ->with('parent')
+            ->withCount('blogs')
+            ->first();
+    }
 }
 

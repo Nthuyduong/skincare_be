@@ -163,4 +163,19 @@ class CategoryController extends ApiController
             return $this->internalServerErrorResponse(__METHOD__, $e);
         }
     }
+
+    public function getCategoryBySlug(string $slug) {
+        try {
+            $category = $this->categoryManagementService->getCategoryBySlug($slug);
+            return response()->json([
+                'status' => self::STATUS_SUCCESS,
+                'msg' => $slug,
+                'data' => $category
+            ]);
+        } catch (ValidationException $e) {
+            return $this->clientErrorResponse('Invalid request: ' . json_encode($e->errors()), \Symfony\Component\HttpFoundation\Response::HTTP_BAD_REQUEST);
+        } catch (Exception $e) {
+            return $this->internalServerErrorResponse(__METHOD__, $e);
+        }
+    }
 }

@@ -82,4 +82,9 @@ class CategoryManagementService
         }
         return false;
     }
+
+    function getCategoryBySlug(string $slug)
+    {
+        return $this->CategoryManagementModelProxy->getCategoryBySlug($slug);
+    }
 }

@@ -110,6 +110,7 @@ Route::namespace("Api")->group(function() {
 
     Route::group(['prefix' => 'categories'], function () {
         Route::get('/', 'CategoryController@getAll');
+        Route::get('/slug/{slug}', 'CategoryController@getCategoryBySlug');
         Route::get('/{id}', 'CategoryController@getCategoryById');
         Route::get('/{id}/childrens', 'CategoryController@getCategoriesByParentId');
     });
