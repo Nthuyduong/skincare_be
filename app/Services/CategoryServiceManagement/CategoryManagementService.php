@@ -87,4 +87,9 @@ class CategoryManagementService
     {
         return $this->CategoryManagementModelProxy->getCategoryBySlug($slug);
     }
+
+    function getCategoryByParentSlug(string $slug)
+    {
+        return $this->CategoryManagementModelProxy->getCategoryByParentSlug($slug);
+    }
 }

@@ -101,6 +101,7 @@ Route::namespace("Api")->group(function() {
         Route::get('/popular', 'BlogController@getPopular');
         Route::get('/related/{id}', 'BlogController@getRelatedBlogs');
         Route::get('/category/{id}', 'BlogController@getBlogsByCategory');
+        Route::get('/category/slug/{slug}', 'BlogController@getBlogsByCategorySlug');
         Route::get('/slug/{slug}', 'BlogController@getBlogBySlug');
         Route::post('/update/view-count/{id}', 'BlogController@updateViewCount');
         Route::post('/update/share-count', 'BlogController@updateShareCount');
@@ -111,6 +112,7 @@ Route::namespace("Api")->group(function() {
     Route::group(['prefix' => 'categories'], function () {
         Route::get('/', 'CategoryController@getAll');
         Route::get('/slug/{slug}', 'CategoryController@getCategoryBySlug');
+        Route::get('/slug/{slug}/childrens', 'CategoryController@getCategoryByParentSlug');
         Route::get('/{id}', 'CategoryController@getCategoryById');
         Route::get('/{id}/childrens', 'CategoryController@getCategoriesByParentId');
     });

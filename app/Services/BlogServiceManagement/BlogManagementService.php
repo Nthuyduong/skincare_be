@@ -134,4 +134,8 @@ class BlogManagementService
     function getByTags($tags, $page = 1, $limit = 10, $filter = []) {
         return $this->blogManagementModelProxy->getByTags($tags, $page, $limit, $filter);
     }
+
+    function getBlogsByCategorySlug($slug, $page = 1, $limit = 10, $filter = []) {
+        return $this->blogManagementModelProxy->getBlogsByCategorySlug($slug, $page, $limit, $filter);
+    }
 }

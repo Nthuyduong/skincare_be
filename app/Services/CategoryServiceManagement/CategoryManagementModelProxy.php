@@ -163,5 +163,29 @@ class CategoryManagementModelProxy
             ->withCount('blogs')
             ->first();
     }
+
+    function getCategoryByParentSlug($slug, $page = 1, $limit = 10)
+    {
+        $query = Category::query();
+        $parent = Category::where('slug', $slug)->first();
+
+        $query = $query->where('parent_id', $parent->id);
+
+        $count = $query->count();
+        $results = $query
+            ->skip(($page - 1) * $limit)
+            ->take($limit)
+            ->get();
+
+        return [
+            'results' => $results,
+            'paginate' => [
+                'current' => $page,
+                'limit' => $limit,
+                'last' => ceil($count / $limit),
+                'count' => $count,
+            ]
+        ];
+    }
 }
 
