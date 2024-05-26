@@ -41,9 +41,9 @@ class SendMailNotication implements ShouldQueue
 
         $content = str_replace('[[title]]', $blog->title, $content);
         $content = str_replace('[[summary]]', $blog->content, $content);
-        $content = str_replace('[[link]]', config('app.fe_url') . "/article/" . $blog->slug, $content);
-        $content = str_replace('[[image]]', config('app.url') . "/storage/desktop/" . $blog->featured_img, $content);
-        $content = str_replace('[[banner]]', config('app.url') . "/storage/desktop/" . $blog->banner_img, $content);
+        $content = str_replace('[[link]]', config('app.fe_url') . "/article/" . rawurlencode($blog->slug), $content);
+        $content = str_replace('[[image]]', config('app.url') . "/storage/desktop/" . rawurlencode($blog->featured_img), $content);
+        $content = str_replace('[[banner]]', config('app.url') . "/storage/desktop/" . rawurlencode($blog->banner_img), $content);
         $publishDate = date('d/m/Y', strtotime($blog->publish_date));
         $content = str_replace('[[date]]', $publishDate, $content);
         $content = str_replace('[[author]]', $blog->author, $content);
