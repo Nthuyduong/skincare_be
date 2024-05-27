@@ -37,7 +37,8 @@ class SendMailNotication implements ShouldQueue
             ->where('id', $this->blogId)
             ->first();
         $setting = MailSetting::where('type', MailSetting::TYPE_NOTIFICATION)->first();
-        $content = $blog->content;
+
+        $content = $setting->content;
 
         $content = str_replace('[[title]]', $blog->title, $content);
         $content = str_replace('[[summary]]', $blog->content, $content);
