@@ -28,7 +28,7 @@ class MigrateImageUrl extends Command
     {
         $blogs = \App\Models\Blog::all();
         foreach ($blogs as $blog) {
-            $blogDetail = \App\Models\BlogDetail::where('blog_id', $blog->id)->get();
+            $blogDetail = \App\Models\BlogDetail::where('blog_id', $blog->id)->first();
             
             $newContent = str_replace('https://app.radiance-aura.blog', 'https://api.radiance-aura.blog', $blogDetail->content);
             $newContentDraft =  str_replace('https://app.radiance-aura.blog', 'https://api.radiance-aura.blog', $blogDetail->content_draft);
