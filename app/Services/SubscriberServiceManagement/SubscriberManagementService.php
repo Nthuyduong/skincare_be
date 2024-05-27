@@ -28,7 +28,7 @@ class SubscriberManagementService
         
         $content = $setting->content;
         $content = str_replace('[[name]]', $sub->name, $content);
-        $content = str_replace('[[now]]', date('d m Y'), $content);
+        $content = str_replace('[[now]]', date('d M Y'), $content);
         $job = new SendMailJob($sub->email, $setting->title, $content);
         dispatch($job);
         return $sub;
