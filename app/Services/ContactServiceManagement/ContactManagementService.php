@@ -23,6 +23,10 @@ class ContactManagementService
     {
         $contact = $this->contactManagementProxy->createContact($data);
         $setting = $this->settingManagementProxy->getSetting(MailSetting::TYPE_CONTACT);
+        
+        $content = $setting->content;
+        $content = str_replace('[[name]]', $contact->name, $content);
+        $content = str_replace('[[now]]', date('d m Y'), $content);
         $job = new SendMailJob($contact->email, $setting->title, $setting->content);
         dispatch($job);
         return $contact;

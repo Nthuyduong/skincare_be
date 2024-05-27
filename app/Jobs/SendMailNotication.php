@@ -55,6 +55,10 @@ class SendMailNotication implements ShouldQueue
 
         Subscribes::chunk(100, function ($subcribes) use ($setting, $content){
             foreach ($subcribes as $subcribe) {
+
+                $content = str_replace('[[name]]', $subcribe->name, $content);
+                $content = str_replace('[[now]]', date('d m Y'), $content);
+
                 $job = new SendMailJob($subcribe->email, $setting->title, $content);
                 dispatch($job);
             }

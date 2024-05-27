@@ -26,7 +26,10 @@ class SubscriberManagementService
         $sub = $this->subscriberManagementProxy->createSubscribe($data);
         $setting = $this->settingManagementProxy->getSetting(MailSetting::TYPE_SUBSCRIBE);
         
-        $job = new SendMailJob($sub->email, $setting->title, $setting->content);
+        $content = $setting->content;
+        $content = str_replace('[[name]]', $sub->name, $content);
+        $content = str_replace('[[now]]', date('d m Y'), $content);
+        $job = new SendMailJob($sub->email, $setting->title, $content);
         dispatch($job);
         return $sub;
     }
