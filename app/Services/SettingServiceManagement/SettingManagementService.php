@@ -32,14 +32,14 @@ class SettingManagementService
             $setting = $this->modelProxy->getSetting(MailSetting::TYPE_CONTACT);
             $content = $setting->content;
             $content = str_replace('[[name]]', 'Duong', $content);
-            $content = str_replace('[[now]]', date('d m Y'), $content);
+            $content = str_replace('[[now]]', date('d M Y'), $content);
             $job = new SendMailJob($email, $setting->title, $content);
             dispatch($job);
         } elseif ($type == MailSetting::TYPE_SUBSCRIBE) {
             $setting = $this->modelProxy->getSetting(MailSetting::TYPE_SUBSCRIBE);
             $content = $setting->content;
             $content = str_replace('[[name]]', 'Duong', $content);
-            $content = str_replace('[[now]]', date('d m Y'), $content);
+            $content = str_replace('[[now]]', date('d M Y'), $content);
             $job = new SendMailJob($email, $setting->title, $content);
             
             dispatch($job);
@@ -52,7 +52,7 @@ class SettingManagementService
             $content = $setting->content;
 
             $content = str_replace('[[name]]', 'Duong', $content);
-            $content = str_replace('[[now]]', date('d m Y'), $content);
+            $content = str_replace('[[now]]', date('d M Y'), $content);
 
             $content = str_replace('[[title]]', $blog->title, $content);
             $content = str_replace('[[summary]]', $blog->content, $content);

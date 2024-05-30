@@ -57,7 +57,7 @@ class SendMailNotication implements ShouldQueue
             foreach ($subcribes as $subcribe) {
 
                 $content = str_replace('[[name]]', $subcribe->name, $content);
-                $content = str_replace('[[now]]', date('d m Y'), $content);
+                $content = str_replace('[[now]]', date('d M Y'), $content);
 
                 $job = new SendMailJob($subcribe->email, $setting->title, $content);
                 dispatch($job);
