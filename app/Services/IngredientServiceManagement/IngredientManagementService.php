@@ -78,4 +78,9 @@ class IngredientManagementService
     {
         return $this->IngredientManagementModelProxy->getAllWithoutPagination();
     }
+
+    function getIngredientBySlug($slug)
+    {
+        return $this->IngredientManagementModelProxy->getIngredientBySlug($slug);
+    }
 }

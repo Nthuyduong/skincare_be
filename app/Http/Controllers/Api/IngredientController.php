@@ -130,6 +130,19 @@ class IngredientController extends ApiController
         }
     }
 
+    public function getIngredientBySlug(string $slug) {
+        try {
+            $ingredient = $this->ingredientManagementService->getIngredientBySlug($slug);
+            return response()->json([
+                'data' => $ingredient,
+                'status' => self::STATUS_SUCCESS,
+                'msg' => 'success',
+            ]);
+        } catch (Exception $e) {
+            return $this->internalServerErrorResponse(__METHOD__, $e);
+        }
+    }
+
     public function getIngredientById(string $id)
     {
         try {

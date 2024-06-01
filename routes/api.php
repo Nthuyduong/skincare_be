@@ -118,6 +118,7 @@ Route::namespace("Api")->group(function() {
     });
 
     Route::group(['prefix' => 'ingredients'], function () {
+        Route::get('/slug/{slug}', 'IngredientController@getIngredientBySlug');
         Route::get('/getAll', 'IngredientController@getAllWithoutPagination');
         Route::get('/', 'IngredientController@getAll');
         Route::get('/{id}', 'IngredientController@getIngredientById');

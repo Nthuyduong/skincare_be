@@ -78,6 +78,13 @@ class IngredientManagementModelProxy
             ->first();
     }
 
+    function getIngredientBySlug($slug) {
+        // select * from ingredients where slug = $slug
+        return Ingredient::where('slug', $slug)
+            ->with('details')
+            ->first();
+    }
+
     function updateIngredient($id, $data)
     {
         $ingredient = $this->getIngredientById($id);
