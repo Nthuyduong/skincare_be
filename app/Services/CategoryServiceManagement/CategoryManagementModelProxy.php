@@ -120,7 +120,7 @@ class CategoryManagementModelProxy
 
     function getCategoriesByParentId($id, $page = 1, $limit)
     {
-        $query = Category::query();
+        $query = Category::with('parent')->with('childrens');
 
         // select * from categories where parent_id = $id
         $query = $query->where('parent_id', $id);
@@ -166,7 +166,7 @@ class CategoryManagementModelProxy
 
     function getCategoryByParentSlug($slug, $page = 1, $limit = 10)
     {
-        $query = Category::query();
+        $query = Category::with('parent')->with('childrens');
         $parent = Category::where('slug', $slug)->first();
 
         $query = $query->where('parent_id', $parent->id);
