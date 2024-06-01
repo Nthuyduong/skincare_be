@@ -54,6 +54,9 @@ class IngredientManagementModelProxy
         $ingredient->featured_img2 = $data['featured_img2'];
         $ingredient->content = $data['content'];
         $ingredient->suggest = $data['suggest'];
+        $ingredient->slug = $data['slug'];
+        $ingredient->meta_title = $data['meta_title'];
+        $ingredient->meta_description = $data['meta_description'];
         $ingredient->save();
 
         if (isset($data['details'])) {
@@ -89,6 +92,9 @@ class IngredientManagementModelProxy
         $ingredient->featured_img2 = $data['featured_img2'] ?? $ingredient->featured_img2;
         $ingredient->content = $data['content'] ?? $ingredient->content;
         $ingredient->suggest = $data['suggest'] ?? $ingredient->suggest;
+        $ingredient->slug = $data['slug'] ?? $ingredient->slug;
+        $ingredient->meta_title = $data['meta_title'] ?? $ingredient->meta_title;
+        $ingredient->meta_description = $data['meta_description'] ?? $ingredient->meta_description;
        
         if (isset($data['details'])) {
             $ingredient->details()->forceDelete();
