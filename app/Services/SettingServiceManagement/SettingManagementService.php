@@ -69,6 +69,27 @@ class SettingManagementService
 
             $job = new SendMailJob($email, $setting->title, $content);
             dispatch($job);
+        } elseif ($type == MailSetting::TYPE_PORTFOLIO) {
+            $setting = $this->modelProxy->getSetting(MailSetting::TYPE_PORTFOLIO);
+            $content = $setting->content;
+            $content = str_replace('[[name]]', 'Duong', $content);
+            $content = str_replace('[[now]]', date('d M Y'), $content);
+            $job = new SendMailJob($email, $setting->title, $content);
+            dispatch($job);
+        } elseif ($type == MailSetting::TYPE_REPLY) {
+            $setting = $this->modelProxy->getSetting(MailSetting::TYPE_REPLY);
+            $content = $setting->content;
+            $content = str_replace('[[name]]', 'Duong', $content);
+            $content = str_replace('[[now]]', date('d M Y'), $content);
+            $job = new SendMailJob($email, $setting->title, $content);
+            dispatch($job);
+        } elseif ($type == MailSetting::TYPE_REPLY) {
+            $setting = $this->modelProxy->getSetting(MailSetting::TYPE_REPLY);
+            $content = $setting->content;
+            $content = str_replace('[[name]]', 'Duong', $content);
+            $content = str_replace('[[now]]', date('d M Y'), $content);
+            $job = new SendMailJob($email, $setting->title, $content);
+            dispatch($job);
         }
     }
 }

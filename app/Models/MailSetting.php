@@ -23,6 +23,7 @@ class MailSetting extends Model
     const TYPE_CONTACT = 2;
     const TYPE_NOTIFICATION = 3;
     const TYPE_PORTFOLIO = 4;
+    const TYPE_REPLY = 5;
 
     use SoftDeletes;
 }

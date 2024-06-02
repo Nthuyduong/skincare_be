@@ -40,6 +40,16 @@ class MigrateMailSettings extends Command
                 'title' => 'Notification',
                 'content' => 'This is a notification email',
             ],
+            [
+                'type' => MailSetting::TYPE_PORTFOLIO,
+                'title' => 'Portfolio',
+                'content' => 'This is a portfolio email',
+            ],
+            [
+                'type' => MailSetting::TYPE_REPLY,
+                'title' => 'Reply',
+                'content' => 'This is a reply email',
+            ],
         ];
 
         foreach ($mailSettings as $mailSetting) {
