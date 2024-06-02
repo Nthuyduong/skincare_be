@@ -3,6 +3,7 @@
 namespace App\Services\SettingServiceManagement;
 
 use App\Jobs\SendMailJob;
+use App\Jobs\SendMailPortfolioJob;
 use App\Models\Blog;
 use App\Models\MailSetting;
 use Illuminate\Support\Facades\Log;
@@ -74,14 +75,7 @@ class SettingManagementService
             $content = $setting->content;
             $content = str_replace('[[name]]', 'Duong', $content);
             $content = str_replace('[[now]]', date('d M Y'), $content);
-            $job = new SendMailJob($email, $setting->title, $content);
-            dispatch($job);
-        } elseif ($type == MailSetting::TYPE_REPLY) {
-            $setting = $this->modelProxy->getSetting(MailSetting::TYPE_REPLY);
-            $content = $setting->content;
-            $content = str_replace('[[name]]', 'Duong', $content);
-            $content = str_replace('[[now]]', date('d M Y'), $content);
-            $job = new SendMailJob($email, $setting->title, $content);
+            $job = new SendMailPortfolioJob($email, $setting->title, $content);
             dispatch($job);
         } elseif ($type == MailSetting::TYPE_REPLY) {
             $setting = $this->modelProxy->getSetting(MailSetting::TYPE_REPLY);
