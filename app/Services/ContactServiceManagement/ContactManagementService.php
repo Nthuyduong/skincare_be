@@ -34,6 +34,9 @@ class ContactManagementService
 
     public function createContactPortfolio($data) {
         $setting = $this->settingManagementProxy->getSetting(MailSetting::TYPE_PORTFOLIO);
+        $content = $setting->content;
+        $content = str_replace('[[name]]', $data['name'], $content);
+        $content = str_replace('[[now]]', date('d M Y'), $content);
         $job = new SendMailPortfolioJob($data['email'], $setting->title, $setting->content);
         dispatch($job);
     }
