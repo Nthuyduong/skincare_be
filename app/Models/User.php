@@ -60,4 +60,9 @@ class User extends Authenticatable implements JWTSubject
     {
         return ['guard' => 'api'];
     }
+
+    public function providers()
+    {
+        return $this->hasMany(Provider::class,'user_id','id');
+    }
 }

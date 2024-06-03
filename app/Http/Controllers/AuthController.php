@@ -8,6 +8,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Exception;
+use Illuminate\Support\Facades\Log;
+use Laravel\Socialite\Facades\Socialite;
 
 class AuthController extends ApiController
 {
@@ -136,5 +138,26 @@ class AuthController extends ApiController
 
     public function refreshAdmin() {
         return $this->respondWithToken(Auth::refresh());
+    }
+
+    public function redirectToProvider($provider)
+    {
+        Log::info('Redirect to provider');
+        $url = Socialite::driver($provider)->stateless()->redirect()->getTargetUrl();
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Redirect to provider',
+            'url' => $url,
+        ]);
+    }
+
+    public function handleProviderCallback($provider)
+    {
+        $user = Socialite::driver($provider)->user();
+        return response()->json([
+            'status' => 'success',
+            'message' => 'User created successfully',
+            'user' => $user,
+        ]);
     }
 }
