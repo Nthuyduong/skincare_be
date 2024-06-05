@@ -27,7 +27,7 @@ class ContactManagementService
         $content = $setting->content;
         $content = str_replace('[[name]]', $contact->name, $content);
         $content = str_replace('[[now]]', date('d M Y'), $content);
-        $job = new SendMailJob($contact->email, $setting->title, $setting->content);
+        $job = new SendMailJob($contact->email, $setting->title, $content);
         dispatch($job);
         return $contact;
     }
