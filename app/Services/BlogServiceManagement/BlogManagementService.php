@@ -138,4 +138,37 @@ class BlogManagementService
     function getBlogsByCategorySlug($slug, $page = 1, $limit = 10, $filter = []) {
         return $this->blogManagementModelProxy->getBlogsByCategorySlug($slug, $page, $limit, $filter);
     }
+
+    function getComments($id, $page = 1, $limit = 10, $filter = []) {
+        return $this->blogManagementModelProxy->getComments($id, $page, $limit, $filter);
+    }
+
+    function createComment($data) {
+        return $this->blogManagementModelProxy->createComment($data);
+    }
+
+    function deleteComment($id) {
+        return $this->blogManagementModelProxy->deleteComment($id);
+    }
+
+    function updateComment($id, $data) {
+        return $this->blogManagementModelProxy->updateComment($id, $data);
+    }
+
+    function getLikes($id) {
+        return $this->blogManagementModelProxy->getLikes($id);
+    }
+
+    function handleLike($id, $user_id) {
+        $isLike = $this->blogManagementModelProxy->isLiked($id, $user_id);
+        if ($isLike) {
+            return $this->blogManagementModelProxy->unLike($id, $user_id);
+        } else {
+            return $this->blogManagementModelProxy->like($id, $user_id);
+        }
+    }
+
+    function isLiked($id, $user_id) {
+        return $this->blogManagementModelProxy->isLiked($id, $user_id);
+    }
 }

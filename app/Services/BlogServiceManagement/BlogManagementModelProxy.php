@@ -4,6 +4,8 @@ namespace App\Services\BlogServiceManagement;
 
 use App\Models\Blog;
 use App\Models\BlogDetail;
+use App\Models\Comment;
+use App\Models\Like;
 use Illuminate\Support\Facades\Log;
 use DateTime;
 use Illuminate\Support\Facades\DB;
@@ -404,5 +406,79 @@ class BlogManagementModelProxy
                 'count' => $count,
             ]
         ];
+    }
+
+    function getComments($id, $page = 1, $limit = 10) {
+        $comments = Comment::where('blog_id', $id)
+            ->with('user')
+            ->where('status', Comment::STATUS_SHOW)
+            ->orderBy('created_at', 'desc')
+            ->skip(($page - 1) * $limit)
+            ->take($limit)
+            ->get();
+        return $comments;
+    }
+
+    function createComment($data) {
+        $comment = new Comment();
+        $comment->user_id = $data['user_id'];
+        $comment->blog_id = $data['blog_id'];
+        $comment->content = $data['content'];
+        $comment->status = Comment::STATUS_SHOW;
+        $comment->save();
+        return $comment;
+    }
+
+    function deleteComment($id) {
+        $comment = Comment::find($id);
+        if ($comment) {
+            $comment->delete();
+            return true;
+        }
+        return false;
+    }
+
+    function updateComment($id, $data) {
+        $comment = Comment::find($id);
+        if ($comment) {
+            $comment->content = $data['content'];
+            $comment->save();
+            return $comment;
+        }
+        return null;
+    }
+
+    function isLiked($blogId, $userId) {
+        $like = Like::where('blog_id', $blogId)
+            ->where('user_id', $userId)
+            ->first();
+        if ($like) {
+            return true;
+        }
+        return false;
+    }
+
+    function getLikes($id) {
+        $likes = Like::where('blog_id', $id)
+            ->with('user')
+            ->get();
+        return $likes;
+    }
+
+    function like($data) {
+        $like = new Like();
+        $like->user_id = $data['user_id'];
+        $like->blog_id = $data['blog_id'];
+        $like->save();
+        return $like;
+    }
+
+    function unLike($id) {
+        $like = Like::find($id);
+        if ($like) {
+            $like->delete();
+            return true;
+        }
+        return false;
     }
 }

@@ -99,6 +99,20 @@ Route::namespace("Api")->group(function() {
         });
     });
     Route::group(['prefix' => 'blogs'], function () {
+        Route::group(['middleware' => 'auth:api'], function ($router) {
+            Route::group(['prefix' => 'comments'], function () {
+                Route::post('/', 'BlogController@createComment');
+                Route::post('/{id}', 'BlogController@updateComment');
+                Route::delete('/{id}', 'BlogController@deleteComment');
+            });
+            Route::group(['prefix' => 'likes'], function () {
+                Route::post('/{id}', 'BlogController@handleLike');
+                Route::get('/isLiked/{id}', 'BlogController@isLiked');
+            });
+        });
+        Route::get('/likes', 'BlogController@getLikes');
+        Route::get('/comments', 'BlogController@getComments');
+
         Route::get('/tags', 'BlogController@getByTags');
         Route::get('/newest', 'BlogController@getNewest');
         Route::get('/popular', 'BlogController@getPopular');

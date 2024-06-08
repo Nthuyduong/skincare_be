@@ -405,4 +405,138 @@ class BlogController extends ApiController
             return $this->internalServerErrorResponse(__METHOD__, $e);
         }
     }
+
+    public function getComments(string $id) {
+        try {
+            $comments = $this->blogManagementService->getComments($id);
+            return response()->json([
+                'data' => $comments,
+                'status' => self::STATUS_SUCCESS,
+                'msg' => 'success',
+            ]);
+        } catch (Exception $e) {
+            return $this->internalServerErrorResponse(__METHOD__, $e);
+        }
+    }
+
+    public function createComment(Request $request) {
+        try {
+            $this->validate($request, [
+                'blog_id' => 'required',
+                'content' => 'required',
+            ]);
+
+            $user = auth()->user();
+
+            $data = [];
+            $data['blog_id'] = $request->input('blog_id');
+            $data['content'] = $request->input('content');
+            $data['user_id'] = $user->id;
+
+            $comment = $this->blogManagementService->createComment($data);
+
+            return response()->json([
+                'status' => self::STATUS_SUCCESS,
+                'msg' => 'test created',
+                'data' => $comment,
+            ]);
+        } catch (ValidationException $e) {
+            return $this->clientErrorResponse('Invalid request: ' . json_encode($e->errors()), \Symfony\Component\HttpFoundation\Response::HTTP_BAD_REQUEST);
+        } catch (Exception $e) {
+            return $this->internalServerErrorResponse(__METHOD__, $e);
+        }
+    }
+
+    public function updateComment(Request $request, string $id) {
+        try {
+            $this->validate($request, [
+                'content' => 'required',
+            ]);
+
+            $data = [];
+            $data['content'] = $request->input('content');
+
+            $comment = $this->blogManagementService->updateComment($id, $data);
+
+            return response()->json([
+                'status' => self::STATUS_SUCCESS,
+                'msg' => 'test updated',
+                'data' => $comment,
+            ]);
+        } catch (ValidationException $e) {
+            return $this->clientErrorResponse('Invalid request: ' . json_encode($e->errors()), \Symfony\Component\HttpFoundation\Response::HTTP_BAD_REQUEST);
+        } catch (Exception $e) {
+            return $this->internalServerErrorResponse(__METHOD__, $e);
+        }
+    }
+
+    public function deleteComment(string $id) {
+        try {
+            $comment = $this->blogManagementService->deleteComment($id);
+
+            return response()->json([
+                'status' => self::STATUS_SUCCESS,
+                'msg' => 'test deleted',
+                'data' => $comment,
+            ]);
+        } catch (Exception $e) {
+            return $this->internalServerErrorResponse(__METHOD__, $e);
+        }
+    }
+
+    public function getLikes(string $id) {
+        try {
+            $likes = $this->blogManagementService->getLikes($id);
+            return response()->json([
+                'data' => $likes,
+                'status' => self::STATUS_SUCCESS,
+                'msg' => 'success',
+            ]);
+        } catch (Exception $e) {
+            return $this->internalServerErrorResponse(__METHOD__, $e);
+        }
+    }
+
+    public function handleLike(Request $request) {
+        try {
+            $this->validate($request, [
+                'blog_id' => 'required',
+            ]);
+
+            $user = auth()->user();
+
+            $data = [];
+            $data['blog_id'] = $request->input('blog_id');
+
+            $like = $this->blogManagementService->handleLike($data['blog_id'], $user->id);
+
+            return response()->json([
+                'status' => self::STATUS_SUCCESS,
+                'msg' => 'test created',
+                'data' => $like,
+            ]);
+        } catch (ValidationException $e) {
+            return $this->clientErrorResponse('Invalid request: ' . json_encode($e->errors()), \Symfony\Component\HttpFoundation\Response::HTTP_BAD_REQUEST);
+        } catch (Exception $e) {
+            return $this->internalServerErrorResponse(__METHOD__, $e);
+        }
+    }
+
+    public function isLiked(string $id) {
+        try {
+            $user = auth()->user();
+
+            $isLike = $this->blogManagementService->isLiked($id, $user->id);
+
+            return response()->json([
+                'status' => self::STATUS_SUCCESS,
+                'msg' => 'test created',
+                'data' => $isLike,
+            ]);
+        } catch (ValidationException $e) {
+            return $this->clientErrorResponse('Invalid request: ' . json_encode($e->errors()), \Symfony\Component\HttpFoundation\Response::HTTP_BAD_REQUEST);
+        } catch (Exception $e) {
+            return $this->internalServerErrorResponse(__METHOD__, $e);
+        }
+    }
 }
