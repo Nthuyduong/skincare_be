@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\UserServiceManagement\UserManagementService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Exception;
@@ -18,8 +19,12 @@ class AuthController extends ApiController
      *
      * @return void
      */
-    public function __construct()
+
+    protected $userManagementService;
+    
+    public function __construct(UserManagementService $userManagementService)
     {
+        $this->userManagementService = $userManagementService;
     }
 
     /**
@@ -142,7 +147,6 @@ class AuthController extends ApiController
 
     public function redirectToProvider($provider)
     {
-        Log::info('Redirect to provider');
         $url = Socialite::driver($provider)->stateless()->redirect()->getTargetUrl();
         return response()->json([
             'status' => 'success',
@@ -153,11 +157,22 @@ class AuthController extends ApiController
 
     public function handleProviderCallback($provider)
     {
-        $user = Socialite::driver($provider)->user();
+        $user = Socialite::driver($provider)->stateless()->user();
+        $data = [
+            'name' => $user->name,
+            'email' => $user->email,
+            'avatar' => $user->avatar,
+            'provider' => $provider,
+            'provider_id' => $user->id,
+        ];
+        $user = $this->userManagementService->createUser($data);
+        $token = Auth::guard('api')->login($user);
+
         return response()->json([
             'status' => 'success',
             'message' => 'User created successfully',
             'user' => $user,
+            'token' => $token,
         ]);
     }
 }

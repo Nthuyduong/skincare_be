@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Provider extends Model
 {
 
-    protected $table = 'blogs';
+    protected $table = 'providers';
 
     use HasFactory;
 
