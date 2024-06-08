@@ -11,14 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('comments', function (Blueprint $table) {
-            $table->id();
-            $table->text('content');
-            $table->bigInteger('user_id');
-            $table->bigInteger('blog_id');
+        Schema::table('comments', function (Blueprint $table) {
+            $table->renameColumn('post_id', 'blog_id')->change();
             $table->integer('status')->default(0);
-            $table->timestamps();
-            $table->softDeletes();
         });
     }
 
@@ -27,6 +22,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('comments');
+        Schema::table('comments', function (Blueprint $table) {
+            $table->renameColumn('blog_id', 'post_id')->change();
+            $table->dropColumn('status');
+        });
     }
 };
