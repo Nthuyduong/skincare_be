@@ -193,7 +193,9 @@ class BlogManagementModelProxy
                 return null;
             }
             $blog->status = Blog::STATUS_SHOW;
-            $blog->publish_date = new DateTime();
+            if (empty($blog->publish_date)) {
+                $blog->publish_date = new DateTime();
+            }
 
             $blog->detail->content = $blog->detail->content_draft;
             $newContent = $blog->detail->content;
