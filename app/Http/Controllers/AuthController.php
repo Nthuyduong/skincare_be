@@ -175,4 +175,25 @@ class AuthController extends ApiController
             'token' => $token,
         ]);
     }
+
+    public function loginGoogleOneTap(Request $request) {
+        $token = $request->input('token');
+        $user = Socialite::driver('google')->userFromToken($token);
+        $data = [
+            'name' => $user->name,
+            'email' => $user->email,
+            'avatar' => $user->avatar,
+            'provider' => 'google',
+            'provider_id' => $user->id,
+        ];
+        $user = $this->userManagementService->createUser($data);
+        $token = Auth::guard('api')->login($user);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'User created successfully',
+            'user' => $user,
+            'token' => $token,
+        ]);
+    }
 }

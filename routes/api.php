@@ -23,10 +23,11 @@ Route::get('/login/{provider}', 'AuthController@redirectToProvider');
 Route::post('/login/{provider}/callback', 'AuthController@handleProviderCallback');
 Route::post('/login', 'AuthController@login');
 Route::post('/register', 'AuthController@register');
+Route::post('/login-google-one-tap', 'AuthController@loginGoogleOneTap');
 
 Route::group(['middleware' => 'auth:api'], function ($router) {
     Route::post('/logout', 'AuthController@logout');
-    Route::post('/refresh', 'AuthController@refresh');
+    Route::get('/refresh', 'AuthController@refresh');
     Route::get('/me', 'AuthController@me');
 });
 Route::prefix('/admin')->group(function() {
@@ -110,8 +111,9 @@ Route::namespace("Api")->group(function() {
                 Route::get('/isLiked/{id}', 'BlogController@isLiked');
             });
         });
-        Route::get('/likes', 'BlogController@getLikes');
-        Route::get('/comments', 'BlogController@getComments');
+        Route::get('/likes/{id}', 'BlogController@getLikes');
+        Route::get('/comments/{id}', 'BlogController@getComments');
+        Route::post('/comments-guest', 'BlogController@createCommentGuest');
 
         Route::get('/tags', 'BlogController@getByTags');
         Route::get('/newest', 'BlogController@getNewest');

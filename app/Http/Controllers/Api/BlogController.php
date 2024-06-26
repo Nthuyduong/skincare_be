@@ -406,9 +406,21 @@ class BlogController extends ApiController
         }
     }
 
-    public function getComments(string $id) {
+    public function getComments(string $id, Request $request) {
         try {
-            $comments = $this->blogManagementService->getComments($id);
+            $page = $request->input('page', 1);
+            if ($page < 1) {
+                $page = 1;
+            }
+            $limit = $request->input('limit', 10);
+            if ($limit < 1) {
+                $limit = 10;
+            }
+            $filter = [];
+            
+            $sort = $request->input('sort');
+            $filter['sort'] = $sort; // ['publish_date:desc', 'view_count:asc', 'share_count:desc
+            $comments = $this->blogManagementService->getComments($id, $page, $limit, $filter);
             return response()->json([
                 'data' => $comments,
                 'status' => self::STATUS_SUCCESS,
@@ -434,6 +446,33 @@ class BlogController extends ApiController
             $data['user_id'] = $user->id;
 
             $comment = $this->blogManagementService->createComment($data);
+
+            return response()->json([
+                'status' => self::STATUS_SUCCESS,
+                'msg' => 'test created',
+                'data' => $comment,
+            ]);
+        } catch (ValidationException $e) {
+            return $this->clientErrorResponse('Invalid request: ' . json_encode($e->errors()), \Symfony\Component\HttpFoundation\Response::HTTP_BAD_REQUEST);
+        } catch (Exception $e) {
+            return $this->internalServerErrorResponse(__METHOD__, $e);
+        }
+    }
+
+    public function createCommentGuest(Request $request) {
+        try {
+            $this->validate($request, [
+                'blog_id' => 'required',
+                'content' => 'required',
+            ]);
+
+            $data = [];
+            $data['blog_id'] = $request->input('blog_id');
+            $data['content'] = $request->input('content');
+            $data['name'] = $request->input('name');
+            $data['email'] = $request->input('email');
+
+            $comment = $this->blogManagementService->createCommentGuest($data);
 
             return response()->json([
                 'status' => self::STATUS_SUCCESS,

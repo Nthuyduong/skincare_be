@@ -146,6 +146,9 @@ class BlogManagementService
     function createComment($data) {
         return $this->blogManagementModelProxy->createComment($data);
     }
+    function createCommentGuest($data) {
+        return $this->blogManagementModelProxy->createCommentGuest($data);
+    }
 
     function deleteComment($id) {
         return $this->blogManagementModelProxy->deleteComment($id);

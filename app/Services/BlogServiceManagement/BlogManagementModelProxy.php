@@ -410,15 +410,32 @@ class BlogManagementModelProxy
         ];
     }
 
-    function getComments($id, $page = 1, $limit = 10) {
-        $comments = Comment::where('blog_id', $id)
+    function getComments($id, $page = 1, $limit = 10, $filter = []) {
+        $query = Comment::where('blog_id', $id)
             ->with('user')
-            ->where('status', Comment::STATUS_SHOW)
-            ->orderBy('created_at', 'desc')
+            ->where('status', Comment::STATUS_SHOW);
+        if (isset($filter['sort'])) {
+            $sort = $filter['sort'];
+            $sortArr = explode(':', $sort);
+            if (count($sortArr) == 2) {
+                $query = $query->orderBy($sortArr[0], $sortArr[1]);
+            }
+        }
+
+        $count = $query->count();
+        $results = $query
             ->skip(($page - 1) * $limit)
             ->take($limit)
             ->get();
-        return $comments;
+        return [
+            'results' => $results,
+            'paginate' => [
+                'current' => $page,
+                'limit' => $limit,
+                'last' => ceil($count / $limit),
+                'count' => $count,
+            ]
+        ];
     }
 
     function createComment($data) {
@@ -427,6 +444,20 @@ class BlogManagementModelProxy
         $comment->blog_id = $data['blog_id'];
         $comment->content = $data['content'];
         $comment->status = Comment::STATUS_SHOW;
+        $comment->save();
+        return Comment::where('id', $comment->id)
+            ->with('user')
+            ->first();
+    }
+
+    function createCommentGuest($data) {
+        $comment = new Comment();
+        $comment->blog_id = $data['blog_id'];
+        $comment->content = $data['content'];
+        $comment->status = Comment::STATUS_SHOW;
+        $comment->name = $data['name'];
+        $comment->email = $data['email'];
+        $comment->type = Comment::TYPE_GUEST;
         $comment->save();
         return $comment;
     }

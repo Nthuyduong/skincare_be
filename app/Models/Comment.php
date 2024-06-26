@@ -26,6 +26,9 @@ class Comment extends Model
     const STATUS_SHOW = 0;
     const STATUS_HIDE = 1;
 
+    const TYPE_USER = 0;
+    const TYPE_GUEST = 1;
+
     protected $table = 'comments';
 
     protected $fillable = [
