@@ -37,4 +37,12 @@ class Category extends Model
     public function blogs() {
         return $this->belongsToMany(Blog::class, 'blogs_categories', 'category_id', 'blog_id');
     }
+
+    public function vi() {
+        return $this->hasOne(CategoryTran::class, 'category_id', 'id')->where('locale', 'vi');
+    }
+
+    public function locales() {
+        return $this->hasMany(CategoryTran::class, 'category_id', 'id');
+    }
 }

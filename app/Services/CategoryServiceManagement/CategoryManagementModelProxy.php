@@ -5,6 +5,8 @@ namespace App\Services\CategoryServiceManagement;
 use App\Models\Category;
 use Illuminate\Support\Facades\Log;
 use DateTime;
+use App\Models\CategoryTran;
+use App\Helpers\LocaleHelper;
 
 class CategoryManagementModelProxy
 {
@@ -14,9 +16,17 @@ class CategoryManagementModelProxy
 
     function getAllWithFilter($page = 1, $limit = 10, $filter = [])
     {
+        $locale = app()->getLocale();
         $query = Category::query();
 
-        $query = $query->with('childrens')->with('parent');
+        if ($locale &&  $locale != 'en') {
+            $query = $query->with($locale)
+                ->with('childrens.' . $locale)
+                ->with('parent.' . $locale);
+        } else {
+            $query->with('childrens')
+                ->with('parent');
+        }
 
         if (isset($filter['search'])) {
             $query = $query->where(function ($q) use ($filter) {
@@ -37,10 +47,11 @@ class CategoryManagementModelProxy
         $results = $query
             ->skip(($page - 1) * $limit)
             ->take($limit)
-            ->get();
+            ->get()
+            ->toArray();
         // select * from blogs
         return [
-            'results' => $results,
+            'results' => LocaleHelper::convertCategoriesToLocale($results, $locale ?? 'en'),
             'paginate' => [
                 'current' => $page,
                 'limit' => $limit,
@@ -68,13 +79,26 @@ class CategoryManagementModelProxy
         return $category;
     }
 
-    function getCategoryById($id)
+    function getCategoryById($id, $isArray = false)
     {
-        return Category::where('id', $id)
-        ->with('childrens')
-        ->with('parent')
-        ->withCount('blogs')
-        ->first();
+        $locale = app()->getLocale();
+        $query = Category::where('id', $id);
+
+        if ($locale && $locale != 'en') {
+            $query = $query->with($locale)
+                ->with('childrens.' . $locale)
+                ->with('parent.' . $locale);
+        } else {
+            $query = $query->with('childrens')
+                ->with('parent');
+        }
+        $query = $query->withCount('blogs');
+
+        if (!$isArray) {
+            return $query->first();
+        }
+
+        return LocaleHelper::convertCategoryToLocale($query->first()->toArray(), $locale);
     }
 
     function findCategoryById($id)
@@ -104,6 +128,28 @@ class CategoryManagementModelProxy
         return $category;
     }
 
+    function createOrUpdateCategoryTran($id, $data)
+    {
+        $locale = app()->getLocale();
+        $categoryTran = CategoryTran::where('category_id', $id)
+            ->where('locale', $locale)
+            ->first();
+        if (!$categoryTran) {
+            $categoryTran = new CategoryTran();
+            $categoryTran->category_id = $id;
+            $categoryTran->locale = $locale;
+        }
+        $categoryTran->name = $data['name'] ?? $categoryTran->name;
+        $categoryTran->slug = $data['slug'] ?? $categoryTran->slug;
+        $categoryTran->meta_title = $data['meta_title'] ?? $categoryTran->meta_title;
+        $categoryTran->meta_description = $data['meta_description'] ?? $categoryTran->meta_description;
+        $categoryTran->description = $data['description'] ?? $categoryTran->description;
+        $categoryTran->save();
+
+        return $categoryTran;
+    }
+
+
     function updateCategoryStatus($id, $status)
     {
         $category = $this->getCategoryById($id);
@@ -120,7 +166,17 @@ class CategoryManagementModelProxy
 
     function getCategoriesByParentId($id, $page = 1, $limit)
     {
-        $query = Category::with('parent')->with('childrens');
+        $locale = app()->getLocale();
+        $query = Category::query();
+
+        if ($locale && $locale != 'en') {
+            $query = $query->with($locale)
+                ->with('childrens.' . $locale)
+                ->with('parent.' . $locale);
+        } else {
+            $query = $query->with('childrens')
+                ->with('parent');
+        }
 
         // select * from categories where parent_id = $id
         $query = $query->where('parent_id', $id);
@@ -134,7 +190,7 @@ class CategoryManagementModelProxy
             ->get();
 
         return [
-            'results' => $results,
+            'results' => LocaleHelper::convertCategoriesToLocale($results->toArray(), $locale),
             'paginate' => [
                 'current' => $page,
                 'limit' => $limit,
@@ -157,17 +213,49 @@ class CategoryManagementModelProxy
 
     function getCategoryBySlug($slug)
     {
-        return Category::where('slug', $slug)
-            ->with('childrens')
-            ->with('parent')
-            ->withCount('blogs')
+        $locale = app()->getLocale();
+        $query = Category::where('slug', $slug)
+            ->orWhereHas('locales', function ($q) use ($slug) {
+                $q->where('slug', $slug);
+            });
+
+        if ($locale && $locale != 'en') {
+            $query = $query->with($locale)
+                ->with('childrens.' . $locale)
+                ->with('parent.' . $locale);
+        } else {
+            $query = $query->with('childrens')
+                ->with('parent');
+        }
+
+        $query = $query->withCount('blogs')
             ->first();
+        if (!$query) {
+            return null;
+        }
+
+        return LocaleHelper::convertCategoryToLocale($query->toArray(), $locale);
     }
 
     function getCategoryByParentSlug($slug, $page = 1, $limit = 10)
     {
-        $query = Category::with('parent')->with('childrens');
-        $parent = Category::where('slug', $slug)->first();
+        $locale = app()->getLocale();
+        $query = Category::query();
+
+        if ($locale && $locale != 'en') {
+            $query = $query->with($locale)
+                ->with('childrens.' . $locale)
+                ->with('parent.' . $locale);
+        } else {
+            $query = $query->with('childrens')
+                ->with('parent');
+        }
+
+        $parent = Category::where('slug', $slug)
+            ->orWhereHas('locales', function ($q) use ($slug) {
+                $q->where('slug', $slug);
+            })
+            ->first();
 
         $query = $query->where('parent_id', $parent->id);
 
@@ -178,7 +266,7 @@ class CategoryManagementModelProxy
             ->get();
 
         return [
-            'results' => $results,
+            'results' => LocaleHelper::convertCategoriesToLocale($results->toArray(), $locale),
             'paginate' => [
                 'current' => $page,
                 'limit' => $limit,

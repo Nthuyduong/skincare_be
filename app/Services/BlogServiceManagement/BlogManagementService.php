@@ -44,7 +44,7 @@ class BlogManagementService
 
     function getBlogById($id)
     {
-        return $this->blogManagementModelProxy->getBlogById($id);
+        return $this->blogManagementModelProxy->getBlogById($id, true);
     }
 
     function getBlogBySlug($slug)
@@ -55,25 +55,32 @@ class BlogManagementService
     function updateBlog($id, $data)
     {
         $blog = $this->blogManagementModelProxy->getBlogById($id);
+
+        $locale = app()->getLocale();
         
         if ($blog) {
-            if (isset($data['featured_img'])) {
-                $featured_img = ImageHelper::resizeImage($data['featured_img']);
-                $data['featured_img'] = $featured_img['original'];
+            if ($locale && $locale != 'en') {
+                return $this->blogManagementModelProxy->createOrUpdateBlogTran($id, $data);
+            } else {
+                if (isset($data['featured_img'])) {
+                    $featured_img = ImageHelper::resizeImage($data['featured_img']);
+                    $data['featured_img'] = $featured_img['original'];
+                }
+                if (isset($data['banner_img'])) {
+                    $banner_img = ImageHelper::resizeImage($data['banner_img']);
+                    $data['banner_img'] = $banner_img['original'];
+                }
+                $updateBLog = $this->blogManagementModelProxy->updateBlog($id, $data);
+                if (isset($data['featured_img']) && $blog->featured_img) {
+                    ImageHelper::removeImage($blog->featured_img);
+                }
+                if (isset($data['banner_img']) && $blog->banner_img) {
+                    ImageHelper::removeImage($blog->banner_img);
+                }
+                return $updateBLog;
             }
-            if (isset($data['banner_img'])) {
-                $banner_img = ImageHelper::resizeImage($data['banner_img']);
-                $data['banner_img'] = $banner_img['original'];
-            }
         }
-        $updateBLog = $this->blogManagementModelProxy->updateBlog($id, $data);
-        if (isset($data['featured_img']) && $blog->featured_img) {
-            ImageHelper::removeImage($blog->featured_img);
-        }
-        if (isset($data['banner_img']) && $blog->banner_img) {
-            ImageHelper::removeImage($blog->banner_img);
-        }
-        return $updateBLog;
+        return null;
     }
 
     function publishBlog($id)

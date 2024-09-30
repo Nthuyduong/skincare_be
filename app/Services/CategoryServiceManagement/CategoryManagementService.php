@@ -39,28 +39,35 @@ class CategoryManagementService
     function updateCategory($id, $data)
     {
         $category = $this->CategoryManagementModelProxy->findCategoryById($id);
-        if (isset($data['featured_img'])) {
-            $featured_img = ImageHelper::resizeImage($data['featured_img']);
-            $data['featured_img'] = $featured_img['original'];
+        if (!$category) {
+            return false;
         }
-        if (isset($data['banner_img'])) {
-            $banner_img = ImageHelper::resizeImage($data['banner_img']);
-            $data['banner_img'] = $banner_img['original'];
+        $locale = app()->getLocale();
+        if ($locale && $locale != 'en') {
+            return $this->CategoryManagementModelProxy->createOrUpdateCategoryTran($id, $data);
+        } else {
+            if (isset($data['featured_img'])) {
+                $featured_img = ImageHelper::resizeImage($data['featured_img']);
+                $data['featured_img'] = $featured_img['original'];
+            }
+            if (isset($data['banner_img'])) {
+                $banner_img = ImageHelper::resizeImage($data['banner_img']);
+                $data['banner_img'] = $banner_img['original'];
+            }
+            $updateCategory = $this->CategoryManagementModelProxy->updateCategory($id, $data);
+    
+            if (isset($data['featured_img']) && $updateCategory) {
+                ImageHelper::removeImage($category->featured_img);
+            }
+            if (isset($data['banner_img']) && $category->banner_img) {
+                ImageHelper::removeImage($category->banner_img);
+            }
+            return $updateCategory;
         }
-        $updateCategory = $this->CategoryManagementModelProxy->updateCategory($id, $data);
-
-        if (isset($data['featured_img']) && $updateCategory) {
-            ImageHelper::removeImage($category->featured_img);
-        }
-        if (isset($data['banner_img']) && $category->banner_img) {
-            ImageHelper::removeImage($category->banner_img);
-        }
-
-        return $updateCategory;
     }
     function getCategoryById($id)
     {
-        return $this->CategoryManagementModelProxy->getCategoryById($id);
+        return $this->CategoryManagementModelProxy->getCategoryById($id, true);
     }
 
     function getCategoriesByParentId($id, $page = 1, $limit = 10)

@@ -33,4 +33,7 @@ class Ingredient extends Model
         return $this->hasMany(IngredientDetail::class, 'ingredient_id', 'id');
     }
 
+    public function vi() {
+        return $this->hasOne(IngredientTran::class, 'ingredient_id', 'id')->where('locale', 'vi');
+    }
 }

@@ -9,6 +9,8 @@ use App\Models\Like;
 use Illuminate\Support\Facades\Log;
 use DateTime;
 use Illuminate\Support\Facades\DB;
+use App\Models\BlogTran;
+use App\Helpers\LocaleHelper;
 
 class BlogManagementModelProxy
 {
@@ -20,17 +22,24 @@ class BlogManagementModelProxy
     {
         $query = Blog::query();
 
-        
+        $locale = app()->getLocale();
 
-        $query = $query
-            ->with('categories');
+        if ($locale && $locale != 'en') {
+            $query = $query->with($locale)
+                ->with('categories.' . $locale);
+        } else {
+            $query = $query->with('categories');
+        }
 
         // check nếu request có filter có search thì thêm vào query
         if (isset($filter['search'])) {
             // gom nhóm các điều kiện trong where lại
             $query = $query->where(function ($q) use ($filter) {
                 $q->where('title', 'like', '%' . $filter['search'] . '%')
-                    ->orWhere('slug', 'like', '%' . $filter['search'] . '%');
+                    ->orWhere('slug', 'like', '%' . $filter['search'] . '%')
+                    ->orWhereHas('locales', function ($q) use ($slug) {
+                        $q->where('slug', $slug);
+                    });
             });
         }
 
@@ -75,10 +84,11 @@ class BlogManagementModelProxy
             )
             ->skip(($page - 1) * $limit)
             ->take($limit)
-            ->get();
+            ->get()
+            ->toArray();
         // select * from blogs
         return [
-            'results' => $results,
+            'results' => LocaleHelper::convertBlogsToLocale($results, $locale ?? 'en'),
             'paginate' => [
                 'current' => $page,
                 'limit' => $limit,
@@ -134,20 +144,46 @@ class BlogManagementModelProxy
         return false;
     }
 
-    function getBlogById($id)
+    function getBlogById($id, $isArray = false)
     {
-        return Blog::where('id', $id)
-            ->with('categories')
-            ->with('detail')
-            ->first();
+        $locale = app()->getLocale();
+        $query = Blog::where('id', $id)
+            ->with('detail');
+        if ($locale && $locale != 'en') {
+            $query = $query->with($locale)
+                ->with('categories.' . $locale);
+        } else {
+            $query = $query->with('categories');
+        }
+        if (!$isArray) {
+            return $query->first();
+        }
+
+        return LocaleHelper::convertBlogToLocale($query->first()->toArray(), $locale);
+            
     }
 
     function getBlogBySlug($slug)
     {
-        return Blog::where('slug', $slug)
-            ->with('detail')
-            ->with('categories.parent')
-            ->first();
+        $locale = app()->getLocale();
+        $query = Blog::where('slug', $slug)
+            ->orWhereHas('locales', function ($q) use ($slug) {
+                $q->where('slug', $slug);
+            })
+            ->with('detail');
+            
+        if ($locale && $locale != 'en') {
+            $query = $query->with($locale)
+                ->with('categories.' . $locale)
+                ->with('categories.parent.' . $locale);
+        } else {
+            $query = $query->with('categories.parent');
+        }
+        $result = $query->first();
+        if (!$result) {
+            return null;
+        }
+        return LocaleHelper::convertBlogToLocale($result->toArray(), $locale);
     }
 
     function updateBlog($id, $data)
@@ -184,6 +220,33 @@ class BlogManagementModelProxy
         });
     }
 
+    function createOrUpdateBlogTran($id, $data) {
+        $locale = app()->getLocale();
+        $blogTran = BlogTran::where('blog_id', $id)
+            ->where('locale', $locale)
+            ->first();
+        if (!$blogTran) {
+            $blogTran = new BlogTran();
+            $blogTran->blog_id = $id;
+            $blogTran->locale = $locale;
+        }
+        $blogTran->title = $data['title'] ?? $blogTran->title;
+        $blogTran->summary = $data['summary'] ?? $blogTran->summary;
+        $blogTran->tag = $data['tag'] ?? $blogTran->tag;
+        $blogTran->slug = $data['slug'] ?? $blogTran->slug;
+        $blogTran->meta_title = $data['meta_title'] ?? $blogTran->meta_title;
+        $blogTran->meta_description = $data['meta_description'] ?? $blogTran->meta_description;
+        $blogTran->excerpt = $data['excerpt'] ?? $blogTran->excerpt;
+        $blogTran->suggest = $data['suggest'] ?? $blogTran->suggest;
+        $blogTran->content_draft = $data['content'] ?? $blogTran->content_draft;
+        if (!$blogTran->content) {
+            $blogTran->content = $blogTran->content_draft;
+        }
+        $blogTran->save();
+
+        return $blogTran;
+    }
+
     function publishBlog($id)
     {
         return DB::transaction(function() use ($id){
@@ -208,6 +271,20 @@ class BlogManagementModelProxy
             $blog->detail->save();
 
             $blog->save();
+
+            $blogTrans = BlogTran::where('blog_id', $id)
+                ->get();
+            foreach ($blogTrans as $tran) {
+                $tran->content = $tran->content_draft;
+                $newTransContent = $tran->content;
+                $domTran = new \DOMDocument();
+                libxml_use_internal_errors(true);
+                $domTran->loadHTML($newTransContent);
+                libxml_clear_errors();
+                $countCharTran = str_word_count($domTran->textContent);
+                $tran->estimate_time = ceil($countCharTran / 238);
+                $tran->save();
+            }
 
             return [
                 'id' => $blog->id,
@@ -262,43 +339,71 @@ class BlogManagementModelProxy
     }
 
     function getNewest($data) {
-        return Blog::with('categories')
-            ->select(
+
+        $locale = app()->getLocale();
+        $query = Blog::query();
+        
+        if ($locale && $locale != 'en') {
+            $query = $query->with($locale)
+                ->with('categories.' . $locale);
+        } else {
+            $query = $query->with('categories');
+        }
+
+        $query = $query->select(
                 'id', 'title', 'slug', 'status', 'publish_date', 'view_count', 'created_at', 'updated_at',
                 'meta_title', 'meta_description', 'featured_img', 'banner_img', 'author', 'summary', 'tag', 'estimate_time'
             )
             ->orderBy('publish_date', 'desc')
-            ->limit($data['limit'])->get();
+            ->limit($data['limit'])
+            ->get();
+
+        return LocaleHelper::convertBlogsToLocale($query->toArray(), $locale ?? 'en');
+
     }
 
     function getPopular($data) {
         $query = Blog::with('categories');
+        $locale = app()->getLocale();
+        if ($locale && $locale != 'en') {
+            $query = $query->with($locale);
+        }
         $query = $query->orderBy('view_count', 'desc');
         if (isset($data['days'])) {
             $fromDate = new DateTime();
             $fromDate->modify('-' . $data['days'] . ' day');
             $query = $query->where('publish_date', '>=', $fromDate);
         }
-        return $query
+        $query = $query
             ->select(
                 'id', 'title', 'slug', 'status', 'publish_date', 'view_count', 'created_at', 'updated_at',
                 'meta_title', 'meta_description', 'featured_img', 'banner_img', 'author', 'summary', 'tag', 'estimate_time'
             )
             ->limit($data['limit'])->get();
+
+        return LocaleHelper::convertBlogsToLocale($query->toArray(), $locale ?? 'en');
     }
 
     function getRelatedBlogs($id) {
-        $blog = $this->getBlogById($id);
+        $locale = app()->getLocale();
+        $blog = $this->getBlogById($id, true);
         if (!$blog) {
             return [];
         }
-        $categories = $blog->categories->pluck('id');
-        $blogs = Blog::with('categories')
-            ->where(function($q) use ($blog, $categories) {
+        $categories = array_column($blog['categories'], 'id');
+        $blogs = Blog::query();
+        if ($locale && $locale != 'en') {
+            $blogs = $blogs->with($locale)
+                ->with('categories.' . $locale);
+        } else {
+            $blogs = $blogs->with('categories');
+        }
+
+        $blogs = $blogs->where(function($q) use ($blog, $categories) {
                 $q->whereHas('categories', function ($q) use ($categories) {
                     $q->whereIn('category_id', $categories);
                 });
-                $tags = explode(',', $blog->tag);
+                $tags = explode(',', $blog['tag']);
                 foreach ($tags as $tag) {
                     $q->orWhere('tag', 'like', '%' . $tag . '%');
                 }
@@ -321,13 +426,18 @@ class BlogManagementModelProxy
                 ->limit(6 - $blogs->count())->get();
             $blogs = $blogs->merge($newBlogs);
         }
-        return $blogs;
+        return LocaleHelper::convertBlogsToLocale($blogs->toArray(), $locale);
     }
 
     function getBlogsByCategoryId($id, $page = 1, $limit = 10, $filter = []) {
 
-        $query = Blog::with('categories')
-            ->whereHas('categories', function ($q) use ($id) {
+        $locale = app()->getLocale();
+        $query = Blog::with('categories');
+
+        if ($locale && $locale != 'en') {
+            $query = $query->with($locale);
+        }
+        $query = $query->whereHas('categories', function ($q) use ($id) {
                 $q->where('category_id', $id);
             })
             ->select(
@@ -347,7 +457,7 @@ class BlogManagementModelProxy
             ->take($limit)
             ->get();
         return [
-            'results' => $results,
+            'results' => LocaleHelper::convertBlogsToLocale($results->toArray(), $locale ?? 'en'),
             'paginate' => [
                 'current' => $page,
                 'limit' => $limit,
@@ -358,8 +468,14 @@ class BlogManagementModelProxy
     }
 
     function getByTags($tag, $page = 1, $limit = 10, $filter = []) {
-        $query = Blog::with('categories')
-            ->where('tag', 'like', '%' . $tag . '%')
+        $locale = app()->getLocale();
+        $query = Blog::with('categories');
+
+        if ($locale && $locale != 'en') {
+            $query = $query->with($locale);
+        }
+
+        $query = $query->where('tag', 'like', '%' . $tag . '%')
             ->select(
                 'id', 'title', 'slug', 'status', 'publish_date', 'view_count', 'created_at', 'updated_at',
                 'meta_title', 'meta_description', 'featured_img', 'banner_img', 'author', 'summary', 'tag', 'estimate_time'
@@ -375,13 +491,25 @@ class BlogManagementModelProxy
             ->skip(($page - 1) * $limit)
             ->take($limit)
             ->get();
-        return $results;
+        return LocaleHelper::convertBlogsToLocale($results->toArray(), $locale ?? 'en');
     }
 
     function getBlogsByCategorySlug($slug, $page = 1, $limit = 10, $filter = []) {
-        $query = Blog::with('categories')
-            ->whereHas('categories', function ($q) use ($slug) {
-                $q->where('slug', $slug);
+        $locale = app()->getLocale();
+        $query = Blog::query();
+
+        if ($locale && $locale != 'en') {
+            $query = $query->with($locale)
+                ->with('categories.' . $locale);
+        } else {
+            $query->with('categories');
+        }
+
+        $query = $query->whereHas('categories', function ($q) use ($slug) {
+                $q->where('slug', $slug)
+                    ->orWhereHas('locales', function ($q) use ($slug) {
+                        $q->where('slug', $slug);
+                    });
             })
             ->select(
                 'id', 'title', 'slug', 'status', 'publish_date', 'view_count', 'created_at', 'updated_at',
@@ -400,7 +528,7 @@ class BlogManagementModelProxy
             ->take($limit)
             ->get();
         return [
-            'results' => $results,
+            'results' => LocaleHelper::convertBlogsToLocale($results->toArray(), $locale ?? 'en'),
             'paginate' => [
                 'current' => $page,
                 'limit' => $limit,

@@ -50,4 +50,12 @@ class Blog extends Model
     public function detail() {
         return $this->hasOne(BlogDetail::class, 'blog_id', 'id');
     }
+
+    public function vi() {
+        return $this->hasOne(BlogTran::class, 'blog_id', 'id')->where('locale', 'vi');
+    }
+
+    public function locales() {
+        return $this->hasMany(BlogTran::class, 'blog_id', 'id');
+    }
 }
